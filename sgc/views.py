@@ -28,7 +28,7 @@ def cadastrar_usuario_view(request):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
 
-            # Cria o cliente Supabase
+            # Obter configurações padrão
             supabase = settings.SUPABASE
 
             # Cria o usuário no Supabase
@@ -75,12 +75,20 @@ def login_view(request):
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
+            lembrar_de_mim = form.data.get('remember_me') == 'on'
 
             try:
                 user = authenticate(request, username=email, password=password)
                 if user is not None:
                     login(request, user)
+                    if lembrar_de_mim:
+                        request.session.set_expiry(1209600)  # 2 semanas
+                    else:
+                        request.session.set_expiry(0)  # Sessão expira quando o navegador é fechado
                     return redirect(index)
+                else:
+                    messages.error(request, "Erro ao fazer login com usuario. Verifique se você ja fez login.")
+                    return redirect(login_view)
             except AuthApiError as e:
                 messages.error(request, f"Erro inesperado: {e}")
     else:

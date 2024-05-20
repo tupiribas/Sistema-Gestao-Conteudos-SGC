@@ -176,3 +176,39 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'sgc.backends.SupabaseBackend',
 ]
+
+# Tempo de vida da sessão (em segundos)
+SESSION_COOKIE_AGE = 1209600  # 2 semanas (valor padrão)
+
+# Se a sessão expira quando o navegador é fechado
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # False por padrão
+
+# Nome do cookie de sessão
+SESSION_COOKIE_NAME = 'sessionid'  # Valor padrão
+
+# Caminho do cookie de sessão (padrão é '/')
+SESSION_COOKIE_PATH = '/'
+
+# Domínio do cookie de sessão (None por padrão)
+SESSION_COOKIE_DOMAIN = None
+
+# Se o cookie deve ser enviado apenas por HTTPS (False por padrão)
+SESSION_COOKIE_SECURE = False
+
+# Se o cookie deve ser acessível apenas por HTTP (True por padrão)
+SESSION_COOKIE_HTTPONLY = True
+
+# Política de SameSite para o cookie (None por padrão)
+SESSION_COOKIE_SAMESITE = 'Lax'
+
+# Engine de armazenamento da sessão (banco de dados por padrão)
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+# Segurança adicional para o middleware CSRF
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+
+# Segurança adicional para cookies de sessão
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'

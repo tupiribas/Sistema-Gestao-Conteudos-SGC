@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
         body {
@@ -41,6 +43,14 @@
             color: red;
             margin-bottom: 10px;
         }
+        .centralizado {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row; 
+            text-align: center; 
+            height-max: 100vh;
+        }
     </style>
 </head>
 <body>
@@ -56,14 +66,7 @@
 
         <form method="POST">
             {% csrf_token %}
-            <div>
-                <label for="id_email">E-mail:</label>
-                <input type="email" name="email" id="id_email" required>
-            </div>
-            <div>
-                <label for="id_password">Senha:</label>
-                <input type="password" name="password" id="id_password" required>
-            </div>
+            {{ form.as_p }}
             <button type="submit">Entrar</button>
             <p>Ainda não tem uma conta? <a href="{% url 'cadastrar_usuario' %}">Cadastre-se</a></p>
         </form>

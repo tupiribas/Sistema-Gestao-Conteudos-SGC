@@ -16,8 +16,8 @@ class SupabaseBackend(BaseBackend):
                 # Obtém ou cria o usuário no banco de dados do Django
                 user, created = User.objects.get_or_create(username=supabase_user.id, defaults={
                     'email': supabase_user.email,
-                    'primeiro_nome': supabase_user.user_metadata.get('first_name', ''),
-                    'segundo_nome': supabase_user.user_metadata.get('last_name', ''),
+                    'first_name': supabase_user.user_metadata.get('first_name', ''),
+                    'last_name': supabase_user.user_metadata.get('last_name', ''),
                 })
 
                 # Atualiza o token da sessão no banco de dados do Django, se necessário
