@@ -35,9 +35,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'sgc.apps.SgcConfig',
-    'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -47,6 +46,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'sgc.apps.SgcConfig',
+    'django_bootstrap5',
 ]
 
 
@@ -178,7 +179,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Tempo de vida da sessão (em segundos)
-SESSION_COOKIE_AGE = 1209600  # 2 semanas (valor padrão)
+SESSION_COOKIE_AGE = 3600 # 2 semanas (valor padrão)
 
 # Se a sessão expira quando o navegador é fechado
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # False por padrão

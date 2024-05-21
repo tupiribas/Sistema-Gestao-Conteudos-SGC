@@ -10,4 +10,4 @@ class FormularioLogin(forms.Form):
     email = forms.EmailField(label='E-mail', required=True)
     password = forms.CharField(
         label='Senha', widget=forms.PasswordInput, required=True)
-    lembrar_de_mim = forms.BooleanField(label='Lembrar de mim', required=False)
+    lembrar_de_mim = forms.BooleanField(label='Lembrar de mim', widget=forms.CheckboxInput(attrs={'class': 'lembrar-de-mim'}), required=False)

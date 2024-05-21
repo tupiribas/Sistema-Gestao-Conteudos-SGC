@@ -1,63 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Sistema de Gestão de Conteúdo</title>
-    <style>
-        /* (Estilos CSS - você pode personalizar) */
-        body {
-            font-family: sans-serif;
-        }
-        .container {
-            width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-        }
-        .boas-vindas {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .botoes {
-            display: flex;
-            justify-content: center;
-        }
-        .botoes a {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 0 10px;
-            background-color: #4CAF50; /* Cor verde */
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .botoes a:hover {
-            background-color: #3e8e41; /* Cor verde mais escura */
-        }
-    </style>
-</head>
-<body>
+{% extends 'sgc/base.html' %} 
 
-    <div class="container">
-        <h1>Bem-vindo ao Sistema de Gestão de Conteúdo</h1>
-
-        {% if user.is_authenticated %}
-            <p class="boas-vindas">Olá, {{ username }}!</p>
-            <div class="botoes">
-                {% comment %} <a href="{% url 'materiais_didaticos' %}">Materiais Didáticos</a>  {% endcomment %}
-                {% comment %} <a href="{% url 'perfil' %}">Meu Perfil</a>
-                <a href="{% url 'logout' %}">Sair</a> {% endcomment %}
-            </div>
-            <div class="botoes"><a href="{% url 'logout' %}">Logout</a></div>
-        {% else %}
-            <p class="boas-vindas">Faça login ou cadastre-se para acessar o sistema.</p>
-            <div class="botoes">
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'cadastrar_usuario' %}">Cadastro</a>
-            </div>
-        {% endif %}
-    </div>
-
-</body>
-</html>
+{% block content %} 
+    <h1>Bem-vindo ao Sistema de Gestão de Conteúdo</h1>
+        
+    {% if user.is_authenticated %}
+        <p class="boas-vindas">Olá, {{ user.email }}!</p>
+    {% else %}
+        <p class="boas-vindas">Faça login ou cadastre-se para acessar o sistema.</p>
+    {% endif %}
+    
+{% endblock %}
