@@ -29,7 +29,7 @@ def cadastrar_usuario_view(request):
             password = form.cleaned_data['password']
 
             # Obter configurações padrão
-            supabase = settings.SUPABASE
+            _supabase = settings.SUPABASE
 
             # Cria o usuário no Supabase
             try:
@@ -39,14 +39,14 @@ def cadastrar_usuario_view(request):
                     login(request, user)
                     return redirect(index)
                 
-                response = supabase.auth.sign_up(
+                _response = _supabase.auth.sign_up(
                     {
                         "email": email,
                         "password": password,
                     }
                 )
 
-                if response:
+                if _response:
                     # Usuário criado com sucesso, volta para o index
                     messages.success(
                         request, 'Usuário cadastrado com sucesso! Verifique seu e-mail para confirmar a conta.')

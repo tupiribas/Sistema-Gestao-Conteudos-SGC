@@ -8,10 +8,10 @@ class SupabaseBackend(BaseBackend):
         supabase = settings.SUPABASE
 
         try:
-            response = supabase.auth.sign_in_with_password({"email": username, "password": password})
+            _response = supabase.auth.sign_in_with_password({"email": username, "password": password})
 
-            if response and response.user:
-                supabase_user = response.user
+            if _response and _response.user:
+                supabase_user = _response.user
 
                 # Obtém ou cria o usuário no banco de dados do Django
                 user, created = User.objects.get_or_create(username=supabase_user.id, defaults={
