@@ -28,11 +28,11 @@ class SupabaseBackend(BaseBackend):
                 return None
 
         except AuthApiError as e:
-            print(f"Erro de autenticação do Supabase: {e}")
-            return None
+            print(f"Erro de autenticação do Supabase")
+            return e
 
     def get_user(self, user_id):
         try:
             return User.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            return None
+        except User.DoesNotExist as e:
+            return e

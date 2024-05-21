@@ -60,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 ]
 
 
@@ -152,6 +153,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = 'pt-br'
+
+USE_I18N = True
 
 TIME_ZONE = 'UTC'
 

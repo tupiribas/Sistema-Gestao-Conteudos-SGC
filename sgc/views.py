@@ -33,12 +33,6 @@ def cadastrar_usuario_view(request):
 
             # Cria o usuário no Supabase
             try:
-                # Verifica se o usuario ja existe e faz autenticação automática
-                user = authenticate(request, username=email, password=password)
-                if user is not None:
-                    login(request, user)
-                    return redirect(index)
-                
                 _response = _supabase.auth.sign_up(
                     {
                         "email": email,
@@ -57,7 +51,7 @@ def cadastrar_usuario_view(request):
                     messages.error(
                         request, 'Erro ao cadastrar o usuário. Tente novamente mais tarde')
                     return redirect(cadastrar_usuario_view)
-            except AuthApiError as e:
+            except Exception as e:
                 print("Erro ao criar usuario no Supabase")
                 messages.error(request, f"Erro inesperado: {e}")
                 return render(request, 'sgc/cadastro_usuario.html', {'form': form})
@@ -86,11 +80,13 @@ def login_view(request):
                     else:
                         request.session.set_expiry(0)  # Sessão expira quando o navegador é fechado
                     return redirect(index)
-                else:
-                    messages.error(request, "Erro ao fazer login com usuario. Verifique se você ja fez login.")
-                    return redirect(login_view)
-            except AuthApiError as e:
-                messages.error(request, f"Erro inesperado: {e}")
+                # else:
+                #     pass
+                #     messages.error(request, f"Erro ao fazer login com usuario. Verifique se você ja fez login.")
+                #     return redirect(login_view)
+            except Exception:
+                messages.error(request, f"Erro do ao entrar como {email}: {user}")
+                return redirect(login_view)
     else:
         form = FormularioLogin()
     return render(request, 'sgc/login.html', {'form': form})
