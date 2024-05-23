@@ -182,10 +182,10 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Tempo de vida da sessão (em segundos)
-SESSION_COOKIE_AGE = 3600 # 2 semanas (valor padrão)
+SESSION_COOKIE_AGE = 3600
 
 # Se a sessão expira quando o navegador é fechado
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # False por padrão
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # False por padrão
 
 # Nome do cookie de sessão
 SESSION_COOKIE_NAME = 'sessionid'  # Valor padrão
