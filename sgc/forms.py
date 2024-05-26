@@ -10,7 +10,7 @@ class CadastroForm(forms.ModelForm):
 
     class Meta:
         model = Usuario
-        fields = ['nome', 'sobrenome', 'email', 'tipo_acesso']
+        fields = ['nome', 'sobrenome', 'email', 'tipo_acesso', ]
         widgets = {
             'tipo_acesso': forms.Select(choices=TipoAcesso.TIPOS_ACESSO_CHOICES),
         }

@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect, requires_csrf_token
 from django.conf import settings
 from gotrue.errors import AuthApiError
-from sgc.models import Usuario
+from sgc.models import TipoAcesso, Usuario, Professor
 
 from .forms import CadastroForm, FormularioLogin
 
@@ -31,7 +31,8 @@ def cadastrar_usuario_view(request):
             password = form.data['confirm_password']
             nome = form.cleaned_data['nome']
             sobrenome = form.cleaned_data['sobrenome']
-            tipo_acesso = form.cleaned_data['tipo_acesso']  # Pelo ID cadastrado
+            # Pelo ID cadastrado
+            tipo_acesso = form.cleaned_data['tipo_acesso'] # 1 professor; 2 - aluno; 
 
             # Obter configurações padrão
             _supabase = settings.SUPABASE
@@ -50,7 +51,9 @@ def cadastrar_usuario_view(request):
                     email=email,
                     tipo_acesso=tipo_acesso,
                 )
-                print(usuario)
+                print("TESTE", tipo_acesso)
+                if str(tipo_acesso) == "Professor":
+                    Professor.objects.create(usuario=usuario, formacao='Ciência da Computação', area_atuacao='Python')
                 # if usuario:
                 #     # Usuário criado com sucesso, volta para o index
                 #     messages.success(

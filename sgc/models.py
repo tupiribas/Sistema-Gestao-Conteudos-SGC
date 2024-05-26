@@ -64,11 +64,11 @@ class Usuario(AbstractBaseUser):
 
 
 class TipoAcesso(models.Model):
-    ALUNO = 'ALUNO'
-    PROFESSOR = 'PROFESSOR'
+    ALUNO = 'aluno'
+    PROFESSOR = 'professor'
     TIPOS_ACESSO_CHOICES = [
-        (ALUNO, 'Aluno'),
-        (PROFESSOR, 'Professor'),
+        (ALUNO, 'aluno'),
+        (PROFESSOR, 'rofessor'),
     ]
     id = models.BigAutoField(primary_key=True)
     nome = models.CharField(
@@ -79,15 +79,14 @@ class TipoAcesso(models.Model):
         return self.nome
 
 
-# class Professor(models.Model):
-#     usuario = models.OneToOneField(
-#         Usuario, primary_key=True, on_delete=models.CASCADE, to_field='matricula', related_name='professor')
-#     # id = models.BigAutoField(primary_key=True)
-#     formacao = models.CharField(max_length=100, null=False)
-#     area_atuacao = models.CharField(max_length=100, null=False)
+class Professor(models.Model):
+    usuario = models.OneToOneField(
+        Usuario, on_delete=models.CASCADE, to_field='matricula', unique=True, related_name='professor')
+    formacao = models.CharField(max_length=100, null=False)
+    area_atuacao = models.CharField(max_length=100, null=False)
 
-#     def __str__(self):
-#         return f"{self.usuario.nome} {self.usuario.sobrenome} - Professor"
+    def __str__(self):
+        return f"{self.usuario.nome} {self.usuario.sobrenome} - Professor"
 
 
 # class Aluno(models.Model):
