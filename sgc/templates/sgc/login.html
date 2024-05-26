@@ -30,6 +30,7 @@
         font-family: "Montserrat", sans-serif;
         font-weight: 500;
         font-size: 16px;
+        position: relative; /* Necessário para o posicionamento absoluto do closeBtn */
     }
     
     form {
@@ -47,17 +48,21 @@
         font-size: 16px;
     }
 
-    button[type="submit"] {
-        margin-top: 20px;
+    button[type="submit"], .back-button {
+        margin-top: 10px;
         background-color: rgb(69, 142, 160, 1);
         color: white;
         border: none;
         border-radius: 5px;
         cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
     }
-
-    button[type="submit"]:hover {
-        background-color: rgb(69, 142, 160, 1);
+    button[type="submit"]:hover, .back-button:hover {
+        background-color: rgb(69, 142, 160, 0.8);
     }
 
     .closeBtn {
@@ -85,7 +90,7 @@
             {% bootstrap_form form %}
             <div class="d-grid gap-2">
                 {% bootstrap_button button_type="submit" content="Entrar" %}
-                {% bootstrap_button class="red" button_type="reset" content="Voltar" %}
+                <a href="{% url 'index' %}" class="back-button">Voltar</a>
             </div>
         </form>
     </div>
