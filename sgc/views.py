@@ -4,8 +4,9 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect, requires_csrf_token
 from django.conf import settings
 from gotrue.errors import AuthApiError
+from sgc.models import Usuario
 
-from .forms import FormularioCadastrarUsuario, FormularioLogin
+from .forms import CadastroForm, FormularioLogin
 
 
 def index(request):
@@ -19,45 +20,57 @@ def index(request):
     # Renderiza o template index.html, passando o nome do usuário no contexto
     return render(request, 'sgc/index.html', {'user': request.user, 'username': nome_usuario})
 
+
 @requires_csrf_token
 @csrf_protect
 def cadastrar_usuario_view(request):
     if request.method == 'POST':
-        form = FormularioCadastrarUsuario(request.POST)
+        form = CadastroForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
+            password = form.data['confirm_password']
+            nome = form.cleaned_data['nome']
+            sobrenome = form.cleaned_data['sobrenome']
+            tipo_acesso = form.cleaned_data['tipo_acesso']  # Pelo ID cadastrado
 
             # Obter configurações padrão
             _supabase = settings.SUPABASE
 
             # Cria o usuário no Supabase
             try:
-                _response = _supabase.auth.sign_up(
-                    {
-                        "email": email,
-                        "password": password,
-                    }
+                # _response = _supabase.auth.sign_up(
+                #     {
+                #         "email": email,
+                #         "password": password,
+                #     }
+                # )
+                usuario = Usuario.objects.create(
+                    nome=nome,
+                    sobrenome=sobrenome,
+                    email=email,
+                    tipo_acesso=tipo_acesso,
                 )
-
-                if _response:
-                    # Usuário criado com sucesso, volta para o index
-                    messages.success(
-                        request, 'Usuário cadastrado com sucesso! Verifique seu e-mail para confirmar a conta.')
-                    return redirect(index)
-                else:
-                    # Usuário NÃO criado, volta para para a tela de cadastro
-                    print("Erro ao criar usuario no Supabase")
-                    messages.error(
-                        request, 'Erro ao cadastrar o usuário. Tente novamente mais tarde')
-                    return redirect(cadastrar_usuario_view)
+                print(usuario)
+                # if usuario:
+                #     # Usuário criado com sucesso, volta para o index
+                #     messages.success(
+                #         request, 'Usuário cadastrado com sucesso! Verifique seu e-mail para confirmar a conta.')
+                #     return redirect(index)
+                # # else:
+                # #     # Usuário NÃO criado, volta para para a tela de cadastro
+                # #     print("Erro ao criar usuario no Supabase")
+                # #     messages.error(
+                # #         request, 'Erro ao cadastrar o usuário. Tente novamente mais tarde')
+                #     return redirect(cadastrar_usuario_view)
+            except AuthApiError as e:
+                messages.error(
+                    request, f"Erro na API de autenticação do Supabase: {e}")
             except Exception as e:
-                print("Erro ao criar usuario no Supabase")
+                print("Erro ao criar usuario no Supabase", e)
                 messages.error(request, f"Erro inesperado: {e}")
-                return render(request, 'sgc/cadastro_usuario.html', {'form': form})
-
+            return render(request, 'sgc/cadastro_usuario.html', {'form': form})
     else:
-        form = FormularioCadastrarUsuario()
+        form = CadastroForm()
     return render(request, 'sgc/cadastro_usuario.html', {'form': form})
 
 
@@ -78,14 +91,16 @@ def login_view(request):
                     if lembrar_de_mim:
                         request.session.set_expiry(1209600)  # 2 semanas
                     else:
-                        request.session.set_expiry(0)  # Sessão expira quando o navegador é fechado
+                        # Sessão expira quando o navegador é fechado
+                        request.session.set_expiry(0)
                     return redirect(index)
                 # else:
                 #     pass
                 #     messages.error(request, f"Erro ao fazer login com usuario. Verifique se você ja fez login.")
                 #     return redirect(login_view)
             except Exception:
-                messages.error(request, f"Erro do ao entrar como {email}: {user}")
+                messages.error(request, f"Erro do ao entrar como {
+                               email}: {user}")
                 return redirect(login_view)
     else:
         form = FormularioLogin()

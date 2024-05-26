@@ -31,20 +31,19 @@ class UsuarioManager(BaseUserManager):
 
 
 class Usuario(AbstractBaseUser):
-    # id = models.BigAutoField(primary_key=False)
-    matricula = models.UUIDField(
-        primary_key=True, default=generate_matricula, editable=False)
+    id = models.BigAutoField(primary_key=True, unique=True, auto_created=True, null=False)
+    matricula = models.UUIDField(default=generate_matricula, unique=True, editable=False)
     data_criacao = models.DateTimeField(auto_now_add=True, null=True)
-    data_alteracao = models.DateTimeField(auto_now=True, null=False)
+    data_alteracao = models.DateTimeField(auto_now=True, null=True)
     nome = models.CharField(max_length=50, null=False)
     email = models.EmailField(unique=True, null=False)
     sobrenome = models.CharField(max_length=70, null=False)
     tipo_acesso = models.ForeignKey(
-        'TipoAcesso', on_delete=models.PROTECT, null=True)
+        "TipoAcesso", on_delete=models.PROTECT, null=True)
 
     # Campos obrigatórios para AbstractBaseUser
-    is_active = models.BooleanField(default=True, null=False)
-    is_staff = models.BooleanField(default=False, null=False)
+    is_active = models.BooleanField(default=True, null=True)
+    is_staff = models.BooleanField(default=False, null=True)
 
     # Configuração do gerenciador de usuários personalizado
     objects = UsuarioManager()
@@ -73,77 +72,77 @@ class TipoAcesso(models.Model):
     ]
     id = models.BigAutoField(primary_key=True)
     nome = models.CharField(
-        max_length=50, choices=TIPOS_ACESSO_CHOICES, unique=True, null=False)
+        max_length=50, unique=True, null=False)
     descricao = models.TextField(blank=True, null=False)
 
     def __str__(self):
         return self.nome
 
 
-class Professor(models.Model):
-    usuario = models.OneToOneField(
-        Usuario, primary_key=True, on_delete=models.CASCADE, to_field='matricula', related_name='professor')
-    # id = models.BigAutoField(primary_key=True)
-    formacao = models.CharField(max_length=100, null=False)
-    area_atuacao = models.CharField(max_length=100, null=False)
+# class Professor(models.Model):
+#     usuario = models.OneToOneField(
+#         Usuario, primary_key=True, on_delete=models.CASCADE, to_field='matricula', related_name='professor')
+#     # id = models.BigAutoField(primary_key=True)
+#     formacao = models.CharField(max_length=100, null=False)
+#     area_atuacao = models.CharField(max_length=100, null=False)
 
-    def __str__(self):
-        return f"{self.usuario.nome} {self.usuario.sobrenome} - Professor"
-
-
-class Aluno(models.Model):
-    # id = models.BigAutoField(primary_key=True)
-    usuario = models.OneToOneField(
-        Usuario, primary_key=True, on_delete=models.CASCADE, to_field='matricula', related_name='aluno')
-    # matricula = models.UUIDField(
-    #     primary_key=True, default=generate_matricula, editable=False, null=False)
-    curso = models.CharField(max_length=100, null=False)
-    turma = models.CharField(max_length=20, null=False)
-
-    def __str__(self):
-        return f"{self.usuario.nome} {self.usuario.sobrenome} - {self.matricula}"
+#     def __str__(self):
+#         return f"{self.usuario.nome} {self.usuario.sobrenome} - Professor"
 
 
-from django.db import models
-from .models import Usuario, Professor
+# class Aluno(models.Model):
+#     # id = models.BigAutoField(primary_key=True)
+#     usuario = models.OneToOneField(
+#         Usuario, primary_key=True, on_delete=models.CASCADE, to_field='matricula', related_name='aluno')
+#     # matricula = models.UUIDField(
+#     #     primary_key=True, default=generate_matricula, editable=False, null=False)
+#     curso = models.CharField(max_length=100, null=False)
+#     turma = models.CharField(max_length=20, null=False)
 
-class Prova(models.Model):
-    titulo = models.CharField(max_length=100)
-    descricao = models.TextField()
-    professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
-    data_criacao = models.DateTimeField(auto_now_add=True)
-    data_limite = models.DateTimeField()
+#     def __str__(self):
+#         return f"{self.usuario.nome} {self.usuario.sobrenome} - {self.matricula}"
 
-    def __str__(self):
-        return self.titulo
 
-class Questao(models.Model):
-    prova = models.ForeignKey(Prova, on_delete=models.CASCADE, related_name='questoes')
-    enunciado = models.TextField()
-    tipo = models.CharField(max_length=20, choices=[
-        ('multipla_escolha', 'Múltipla Escolha'),
-        ('dissertativa', 'Dissertativa'),
-    ])
-    # Outros campos para opções de múltipla escolha (se necessário)
+# from django.db import models
+# from .models import Usuario, Professor
 
-    def __str__(self):
-        return self.enunciado[:50]  # Exibe os primeiros 50 caracteres do enunciado
+# class Prova(models.Model):
+#     titulo = models.CharField(max_length=100)
+#     descricao = models.TextField()
+#     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
+#     data_criacao = models.DateTimeField(auto_now_add=True)
+#     data_limite = models.DateTimeField()
 
-class Atividade(models.Model):
-    titulo = models.CharField(max_length=100)
-    descricao = models.TextField()
-    professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
-    data_criacao = models.DateTimeField(auto_now_add=True)
-    data_limite = models.DateTimeField()
+#     def __str__(self):
+#         return self.titulo
 
-    def __str__(self):
-        return self.titulo
+# class Questao(models.Model):
+#     prova = models.ForeignKey(Prova, on_delete=models.CASCADE, related_name='questoes')
+#     enunciado = models.TextField()
+#     tipo = models.CharField(max_length=20, choices=[
+#         ('multipla_escolha', 'Múltipla Escolha'),
+#         ('dissertativa', 'Dissertativa'),
+#     ])
+#     # Outros campos para opções de múltipla escolha (se necessário)
 
-class Resposta(models.Model):
-    questao = models.ForeignKey(Questao, on_delete=models.CASCADE)
-    aluno = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    resposta_texto = models.TextField(blank=True, null=True)  # Para questões dissertativas
-    # Outros campos para armazenar respostas de múltipla escolha (se necessário)
+#     def __str__(self):
+#         return self.enunciado[:50]  # Exibe os primeiros 50 caracteres do enunciado
 
-    def __str__(self):
-        return f"Resposta de {self.aluno} para {self.questao}"
+# class Atividade(models.Model):
+#     titulo = models.CharField(max_length=100)
+#     descricao = models.TextField()
+#     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
+#     data_criacao = models.DateTimeField(auto_now_add=True)
+#     data_limite = models.DateTimeField()
+
+#     def __str__(self):
+#         return self.titulo
+
+# class Resposta(models.Model):
+#     questao = models.ForeignKey(Questao, on_delete=models.CASCADE)
+#     aluno = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+#     resposta_texto = models.TextField(blank=True, null=True)  # Para questões dissertativas
+#     # Outros campos para armazenar respostas de múltipla escolha (se necessário)
+
+#     def __str__(self):
+#         return f"Resposta de {self.aluno} para {self.questao}"
