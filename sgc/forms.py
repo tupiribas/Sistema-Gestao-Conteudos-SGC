@@ -7,10 +7,11 @@ class CadastroForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, label="Senha")
     confirm_password = forms.CharField(
         widget=forms.PasswordInput, label="Confirmar Senha")
-
+    formacao = forms.CharField(label="Formação")
+    area_atuacao = forms.CharField(label="Area de Atuação")
     class Meta:
         model = Usuario
-        fields = ['nome', 'sobrenome', 'email', 'tipo_acesso', ]
+        fields = ['nome', 'sobrenome', 'email', 'tipo_acesso']
         widgets = {
             'tipo_acesso': forms.Select(choices=TipoAcesso.TIPOS_ACESSO_CHOICES),
         }

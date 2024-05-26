@@ -26,13 +26,15 @@ def index(request):
 def cadastrar_usuario_view(request):
     if request.method == 'POST':
         form = CadastroForm(request.POST)
+        tipo_acesso = 'Professor'
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.data['confirm_password']
             nome = form.cleaned_data['nome']
             sobrenome = form.cleaned_data['sobrenome']
-            # Pelo ID cadastrado
-            tipo_acesso = form.cleaned_data['tipo_acesso'] # 1 professor; 2 - aluno; 
+            tipo_acesso = form.cleaned_data['tipo_acesso']
+            formacao = form.cleaned_data['formacao']
+            area_atuacao = form.cleaned_data['area_atuacao']
 
             # Obter configurações padrão
             _supabase = settings.SUPABASE
@@ -51,20 +53,14 @@ def cadastrar_usuario_view(request):
                     email=email,
                     tipo_acesso=tipo_acesso,
                 )
-                print("TESTE", tipo_acesso)
                 if str(tipo_acesso) == "Professor":
-                    Professor.objects.create(usuario=usuario, formacao='Ciência da Computação', area_atuacao='Python')
-                # if usuario:
-                #     # Usuário criado com sucesso, volta para o index
-                #     messages.success(
-                #         request, 'Usuário cadastrado com sucesso! Verifique seu e-mail para confirmar a conta.')
-                #     return redirect(index)
-                # # else:
-                # #     # Usuário NÃO criado, volta para para a tela de cadastro
-                # #     print("Erro ao criar usuario no Supabase")
-                # #     messages.error(
-                # #         request, 'Erro ao cadastrar o usuário. Tente novamente mais tarde')
-                #     return redirect(cadastrar_usuario_view)
+                    professor = Professor.objects.create(
+                        usuario=usuario, formacao=formacao, area_atuacao=area_atuacao)
+                    if usuario and professor:
+                        # Usuário criado com sucesso, volta para o index
+                        messages.success(
+                            request, 'Usuário cadastrado com sucesso! Verifique seu e-mail para confirmar a conta.')
+                        return redirect(login)
             except AuthApiError as e:
                 messages.error(
                     request, f"Erro na API de autenticação do Supabase: {e}")

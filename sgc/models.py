@@ -31,8 +31,10 @@ class UsuarioManager(BaseUserManager):
 
 
 class Usuario(AbstractBaseUser):
-    id = models.BigAutoField(primary_key=True, unique=True, auto_created=True, null=False)
-    matricula = models.UUIDField(default=generate_matricula, unique=True, editable=False)
+    id = models.BigAutoField(
+        primary_key=True, unique=True, auto_created=True, null=False)
+    matricula = models.UUIDField(
+        default=generate_matricula, unique=True, editable=False)
     data_criacao = models.DateTimeField(auto_now_add=True, null=True)
     data_alteracao = models.DateTimeField(auto_now=True, null=True)
     nome = models.CharField(max_length=50, null=False)
@@ -81,7 +83,7 @@ class TipoAcesso(models.Model):
 
 class Professor(models.Model):
     usuario = models.OneToOneField(
-        Usuario, on_delete=models.CASCADE, to_field='matricula', unique=True, related_name='professor')
+        Usuario, on_delete=models.CASCADE, to_field='matricula', unique=True, related_name='professor', null=False)
     formacao = models.CharField(max_length=100, null=False)
     area_atuacao = models.CharField(max_length=100, null=False)
 
@@ -89,18 +91,25 @@ class Professor(models.Model):
         return f"{self.usuario.nome} {self.usuario.sobrenome} - Professor"
 
 
-# class Aluno(models.Model):
-#     # id = models.BigAutoField(primary_key=True)
-#     usuario = models.OneToOneField(
-#         Usuario, primary_key=True, on_delete=models.CASCADE, to_field='matricula', related_name='aluno')
-#     # matricula = models.UUIDField(
-#     #     primary_key=True, default=generate_matricula, editable=False, null=False)
-#     curso = models.CharField(max_length=100, null=False)
-#     turma = models.CharField(max_length=20, null=False)
+class Aluno(models.Model):
+    usuario = models.OneToOneField(
+        Usuario, on_delete=models.CASCADE, to_field='matricula', unique=True, related_name='aluno', null=False)
+    curso = models.CharField(max_length=100, null=False)
+    turma = models.CharField(max_length=20, null=False)
 
-#     def __str__(self):
-#         return f"{self.usuario.nome} {self.usuario.sobrenome} - {self.matricula}"
+    def __str__(self):
+        return f"{self.usuario.nome} {self.usuario.sobrenome} - {self.matricula}"
 
+
+# class Turma(models.Model):
+#     nome = models.CharField(max_length=50, unique=True)
+#     descricao = models.TextField(blank=True)
+#     professor = models.ForeignKey(Professor, to_field='matricula', on_delete=models.PROTECT, related_name='turmas')  # Professor responsável
+#     alunos = models.ManyToManyField(Aluno, related_name='turmas')
+    # Implementação futura (data, horário e sala)
+
+    def __str__(self):
+        return self.nome
 
 # from django.db import models
 # from .models import Usuario, Professor
