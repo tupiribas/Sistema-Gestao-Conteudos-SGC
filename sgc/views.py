@@ -7,7 +7,7 @@ from django.conf import settings
 from gotrue.errors import AuthApiError
 from sgc.models import TipoAcesso, Usuario, Professor, Aluno
 
-from .forms import CadastroUsuarioForm, LoginForm
+from .forms import CadastrarAlunoForm, CadastrarProfessorForm, CadastroUsuarioForm, LoginForm
 
 
 def index(request):
@@ -42,9 +42,9 @@ def cadastrar_usuario_view(request):
 
 @requires_csrf_token
 @csrf_protect
-def processar_cadastro_aluno(request):
+def processar_cadastro_aluno_view(request):
     if request.method == 'POST':
-        form = CadastroAlunoForm(request.POST)
+        form = CadastrarAlunoForm(request.POST)
         if form.is_valid():
             cadastro_data = request.session.get('cadastro_data', {})
             nome = cadastro_data.get('nome')
@@ -65,8 +65,34 @@ def processar_cadastro_aluno(request):
                 request, 'Cadastro de aluno realizado com sucesso!')
             return redirect('index')
     else:
-        form = CadastroAlunoForm()
+        form = CadastrarAlunoForm()
     return render(request, 'sgc/cadastro_aluno.html', {'form': form})
+
+@requires_csrf_token
+@csrf_protect
+def processar_cadastro_professor_view(request):
+    if request.method == 'POST':
+        form = CadastrarProfessorForm(request.POST)
+        if form.is_valid():
+            cadastro_data = request.session.get('cadastro_data', {})
+            nome = cadastro_data.get('nome')
+            sobrenome = cadastro_data.get('sobrenome')
+            email = cadastro_data.get('email')
+            password = cadastro_data.get('password')
+            tipo_acesso = cadastro_data.get('tipo_acesso')
+            formacao = form.cleaned_data['formacao']
+            area_atuacao = form.cleaned_data['area_atuacao']
+            
+            # Salve o usuário e o professor no banco de dados
+            usuario = Usuario.objects.create(
+                nome=nome, sobrenome=sobrenome, email=email, tipo_acesso=tipo_acesso
+            )
+            professor = Professor.objects.create(usuario=usuario, formacao=formacao, area_atuacao=area_atuacao)
+            messages.success(request, 'Cadastro de professor realizado com sucesso!')
+            return redirect('index')
+    else:
+        form = CadastrarProfessorForm()
+    return render(request, 'sgc/cadastro_professor.html', {'form': form})
 
 
 @requires_csrf_token

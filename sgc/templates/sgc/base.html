@@ -82,6 +82,30 @@
                 display: none;
             }
         }
+        button[type="submit"], .back-button {
+            margin-top: 10px;
+            background-color: rgb(69, 142, 160, 1);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        button[type="submit"]:hover, .back-button:hover {
+            background-color: rgb(69, 142, 160, 0.8);
+        }
+    
+        .closeBtn {
+            position: absolute; /* Posicionamento absoluto em relação ao card-header */
+            top: 10px; /* Ajuste o valor conforme necessário */
+            right: 10px; /* Ajuste o valor conforme necessário */
+            font-size: 30px; /* Tamanho da fonte do "X" */
+            cursor: pointer; /* Adiciona o cursor de ponteiro ao passar o mouse */
+        }
     </style>
 </head>
 <body>

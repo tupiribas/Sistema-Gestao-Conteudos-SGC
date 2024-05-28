@@ -1,6 +1,6 @@
 from django import forms
 from django import forms
-from .models import Usuario, TipoAcesso
+from .models import Aluno, Professor, Usuario, TipoAcesso
 
 
 class CadastroUsuarioForm(forms.ModelForm):
@@ -24,6 +24,18 @@ class CadastroUsuarioForm(forms.ModelForm):
             raise forms.ValidationError(
                 "As senhas não coincidem."
             )
+
+
+class CadastrarProfessorForm(forms.ModelForm):
+    class Meta:
+        model = Professor
+        fields = ['formacao', 'area_atuacao']
+
+
+class CadastrarAlunoForm(forms.ModelForm):
+    class Meta:
+        model = Aluno
+        fields = ['curso', 'turma']
 
 
 class LoginForm(forms.Form):
