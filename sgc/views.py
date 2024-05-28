@@ -29,12 +29,12 @@ def cadastrar_usuario_view(request):
         form = CadastroUsuarioForm(request.POST)
         if form.is_valid():
             tipo_acesso = form.cleaned_data['tipo_acesso']
-            # Salve os dados comuns em uma sessão para usá-los depois
-            request.session['cadastro_data'] = form.cleaned_data
-            if tipo_acesso == 'Aluno':
-                return redirect(reverse('cadastro_aluno'))
-            elif tipo_acesso == 'Professor':
-                return redirect(reverse('cadastro_professor'))
+            tipo_acesso_obj = TipoAcesso.objects.get(nome=str(tipo_acesso))
+            request.session['cadastro_data'] = form.data
+            if tipo_acesso_obj.nome == "Aluno":
+                return redirect(reverse('processar_cadastro_aluno_view'))
+            elif tipo_acesso_obj.nome == "Professor":
+                return redirect(reverse('processar_cadastro_professor_view'))
     else:
         form = CadastroUsuarioForm()
     return render(request, 'sgc/cadastro_usuario.html', {'form': form})
@@ -51,22 +51,24 @@ def processar_cadastro_aluno_view(request):
             sobrenome = cadastro_data.get('sobrenome')
             email = cadastro_data.get('email')
             password = cadastro_data.get('password')
-            tipo_acesso = cadastro_data.get('tipo_acesso')
+            tipo_acesso = int(cadastro_data.get('tipo_acesso'))
             curso = form.cleaned_data['curso']
             turma = form.cleaned_data['turma']
 
             # Salve o usuário e o aluno no banco de dados
             usuario = Usuario.objects.create(
-                nome=nome, sobrenome=sobrenome, email=email, tipo_acesso=tipo_acesso
+                nome=nome, sobrenome=sobrenome, email=email, tipo_acesso=TipoAcesso.objects.get(id=tipo_acesso)
             )
             aluno = Aluno.objects.create(
                 usuario=usuario, curso=curso, turma=turma)
             messages.success(
                 request, 'Cadastro de aluno realizado com sucesso!')
-            return redirect('index')
+            del request.session['cadastro_data']
+            return redirect('login')
     else:
         form = CadastrarAlunoForm()
     return render(request, 'sgc/cadastro_aluno.html', {'form': form})
+
 
 @requires_csrf_token
 @csrf_protect
@@ -75,21 +77,24 @@ def processar_cadastro_professor_view(request):
         form = CadastrarProfessorForm(request.POST)
         if form.is_valid():
             cadastro_data = request.session.get('cadastro_data', {})
+            # print(cadastro_data)
             nome = cadastro_data.get('nome')
             sobrenome = cadastro_data.get('sobrenome')
             email = cadastro_data.get('email')
             password = cadastro_data.get('password')
-            tipo_acesso = cadastro_data.get('tipo_acesso')
+            tipo_acesso = int(cadastro_data.get('tipo_acesso'))
             formacao = form.cleaned_data['formacao']
             area_atuacao = form.cleaned_data['area_atuacao']
-            
-            # Salve o usuário e o professor no banco de dados
+            # Salvando o usuário e o professor no banco de dados
             usuario = Usuario.objects.create(
-                nome=nome, sobrenome=sobrenome, email=email, tipo_acesso=tipo_acesso
+                nome=nome, sobrenome=sobrenome, email=email, tipo_acesso=TipoAcesso.objects.get(id=tipo_acesso)
             )
-            professor = Professor.objects.create(usuario=usuario, formacao=formacao, area_atuacao=area_atuacao)
-            messages.success(request, 'Cadastro de professor realizado com sucesso!')
-            return redirect('index')
+            professor = Professor.objects.create(
+                usuario=usuario, formacao=formacao, area_atuacao=area_atuacao)
+            messages.success(
+                request, 'Cadastro de professor realizado com sucesso!')
+            del request.session['cadastro_data']
+            return redirect('login')
     else:
         form = CadastrarProfessorForm()
     return render(request, 'sgc/cadastro_professor.html', {'form': form})

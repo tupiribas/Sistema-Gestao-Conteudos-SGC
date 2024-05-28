@@ -24,6 +24,7 @@ class CadastroUsuarioForm(forms.ModelForm):
             raise forms.ValidationError(
                 "As senhas não coincidem."
             )
+        return cleaned_data
 
 
 class CadastrarProfessorForm(forms.ModelForm):

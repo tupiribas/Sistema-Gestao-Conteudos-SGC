@@ -6,11 +6,33 @@
 
 <form method="POST" id="cadastroForm" action="{% url 'cadastrar_usuario_view' %}">
     {% csrf_token %}
-    {% bootstrap_form form %}
+    <div id="camposComuns">
+        {% bootstrap_field form.nome %}
+        {% bootstrap_field form.sobrenome %}
+        {% bootstrap_field form.email %}
+        {% bootstrap_field form.password %}
+        {% bootstrap_field form.confirm_password %}
+    </div>
+
+    <div class="mb-3">
+        {{ form.tipo_acesso.label_tag }}
+        {% bootstrap_field form.tipo_acesso %}
+    </div>
+
     <div class="d-grid gap-2">
-        {% bootstrap_button button_type="submit" content="Proximo" %}
-        <a href="{% url 'cadastrar_usuario_view' %}" class="back-button">Voltar</a>
+        {% bootstrap_button button_type="submit" content="Próximo" %}
+        <button type="button" class="btn btn-secondary back-button">Voltar</button>
     </div>
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const backButton = document.querySelector('.back-button');
+        backButton.addEventListener('click', function () {
+            window.history.back();
+        });
+    });
+</script>
+
 {% bootstrap_javascript %}
 {% endblock %}
