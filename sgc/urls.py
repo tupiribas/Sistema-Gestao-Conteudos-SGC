@@ -21,7 +21,9 @@ from .views import cadastrar_usuario_view, login_view, logout_view, index
 urlpatterns = [
     path(route='admin/', view=admin.site.urls),
     path(route='', view=index, name='index'),
-    path(route='cadastrar/', view=cadastrar_usuario_view, name='cadastrar_usuario'),
+    path(route='cadastrar/', view=cadastrar_usuario_view, name='cadastrar_usuario_view'),
+    # path('cadastrar/aluno/', processar_cadastro_aluno_view, name='processar_cadastro_aluno_view'),
+    # path('cadastrar/professor/', processar_cadastro_professor_view, name='processar_cadastro_professor_view'),
     path(route='login/', view=login_view, name='login'),
     path(route='logout/', view=logout_view, name='logout'),
 ]

@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect, requires_csrf_token
 from django.conf import settings
 from gotrue.errors import AuthApiError
-from sgc.models import TipoAcesso, Usuario, Professor
+from sgc.models import TipoAcesso, Usuario, Professor, Aluno
 
-from .forms import CadastroForm, FormularioLogin
+from .forms import CadastroUsuarioForm, LoginForm
 
 
 def index(request):
@@ -25,59 +26,54 @@ def index(request):
 @csrf_protect
 def cadastrar_usuario_view(request):
     if request.method == 'POST':
-        form = CadastroForm(request.POST)
-        tipo_acesso = 'Professor'
+        form = CadastroUsuarioForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data['email']
-            password = form.data['confirm_password']
-            nome = form.cleaned_data['nome']
-            sobrenome = form.cleaned_data['sobrenome']
             tipo_acesso = form.cleaned_data['tipo_acesso']
-            formacao = form.cleaned_data['formacao']
-            area_atuacao = form.cleaned_data['area_atuacao']
-
-            # Obter configurações padrão
-            _supabase = settings.SUPABASE
-
-            # Cria o usuário no Supabase
-            try:
-                # _response = _supabase.auth.sign_up(
-                #     {
-                #         "email": email,
-                #         "password": password,
-                #     }
-                # )
-                usuario = Usuario.objects.create(
-                    nome=nome,
-                    sobrenome=sobrenome,
-                    email=email,
-                    tipo_acesso=tipo_acesso,
-                )
-                if str(tipo_acesso) == "Professor":
-                    professor = Professor.objects.create(
-                        usuario=usuario, formacao=formacao, area_atuacao=area_atuacao)
-                    if usuario and professor:
-                        # Usuário criado com sucesso, volta para o index
-                        messages.success(
-                            request, 'Usuário cadastrado com sucesso! Verifique seu e-mail para confirmar a conta.')
-                        return redirect(login)
-            except AuthApiError as e:
-                messages.error(
-                    request, f"Erro na API de autenticação do Supabase: {e}")
-            except Exception as e:
-                print("Erro ao criar usuario no Supabase", e)
-                messages.error(request, f"Erro inesperado: {e}")
-            return render(request, 'sgc/cadastro_usuario.html', {'form': form})
+            # Salve os dados comuns em uma sessão para usá-los depois
+            request.session['cadastro_data'] = form.cleaned_data
+            if tipo_acesso == 'Aluno':
+                return redirect(reverse('cadastro_aluno'))
+            elif tipo_acesso == 'Professor':
+                return redirect(reverse('cadastro_professor'))
     else:
-        form = CadastroForm()
+        form = CadastroUsuarioForm()
     return render(request, 'sgc/cadastro_usuario.html', {'form': form})
+
+
+@requires_csrf_token
+@csrf_protect
+def processar_cadastro_aluno(request):
+    if request.method == 'POST':
+        form = CadastroAlunoForm(request.POST)
+        if form.is_valid():
+            cadastro_data = request.session.get('cadastro_data', {})
+            nome = cadastro_data.get('nome')
+            sobrenome = cadastro_data.get('sobrenome')
+            email = cadastro_data.get('email')
+            password = cadastro_data.get('password')
+            tipo_acesso = cadastro_data.get('tipo_acesso')
+            curso = form.cleaned_data['curso']
+            turma = form.cleaned_data['turma']
+
+            # Salve o usuário e o aluno no banco de dados
+            usuario = Usuario.objects.create(
+                nome=nome, sobrenome=sobrenome, email=email, tipo_acesso=tipo_acesso
+            )
+            aluno = Aluno.objects.create(
+                usuario=usuario, curso=curso, turma=turma)
+            messages.success(
+                request, 'Cadastro de aluno realizado com sucesso!')
+            return redirect('index')
+    else:
+        form = CadastroAlunoForm()
+    return render(request, 'sgc/cadastro_aluno.html', {'form': form})
 
 
 @requires_csrf_token
 @csrf_protect
 def login_view(request):
     if request.method == 'POST':
-        form = FormularioLogin(request.POST)
+        form = LoginForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
@@ -102,7 +98,7 @@ def login_view(request):
                                email}: {user}")
                 return redirect(login_view)
     else:
-        form = FormularioLogin()
+        form = LoginForm()
     return render(request, 'sgc/login.html', {'form': form})
 
 

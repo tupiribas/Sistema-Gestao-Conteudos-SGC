@@ -3,12 +3,11 @@ from django import forms
 from .models import Usuario, TipoAcesso
 
 
-class CadastroForm(forms.ModelForm):
+class CadastroUsuarioForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, label="Senha")
     confirm_password = forms.CharField(
         widget=forms.PasswordInput, label="Confirmar Senha")
-    formacao = forms.CharField(label="Formação")
-    area_atuacao = forms.CharField(label="Area de Atuação")
+
     class Meta:
         model = Usuario
         fields = ['nome', 'sobrenome', 'email', 'tipo_acesso']
@@ -27,7 +26,7 @@ class CadastroForm(forms.ModelForm):
             )
 
 
-class FormularioLogin(forms.Form):
+class LoginForm(forms.Form):
     email = forms.EmailField(label='E-mail', required=True)
     password = forms.CharField(
         label='Senha', widget=forms.PasswordInput, required=True)
