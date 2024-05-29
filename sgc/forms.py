@@ -27,6 +27,22 @@ class CadastroUsuarioForm(forms.ModelForm):
         return cleaned_data
 
 
+class UsuarioForm(forms.ModelForm):
+    class Meta:
+        model = Usuario
+        # Campos comuns a todos os usuários
+        fields = ['nome', 'sobrenome', 'email']
+
+class ProfessorForm(forms.ModelForm):
+    class Meta:
+        model = Professor
+        fields = ['formacao', 'area_atuacao']  # Campos específicos de professor
+
+class AlunoForm(forms.ModelForm):
+    class Meta:
+        model = Aluno
+        fields = ['curso', 'turma']
+
 class CadastrarProfessorForm(forms.ModelForm):
     class Meta:
         model = Professor

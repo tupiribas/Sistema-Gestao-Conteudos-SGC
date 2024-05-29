@@ -145,9 +145,11 @@
         </div>
         <div class="offcanvas-body d-flex flex-column"> 
             <ul class="nav flex-column">
+                {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">Item 1</a>
+                    <a class="nav-link active" href="perfil/">Perfil</a>
                 </li>
+                {% endif %}
                 <li class="nav-item">
                     <a class="nav-link" href="#">Item 2</a>
                 </li>

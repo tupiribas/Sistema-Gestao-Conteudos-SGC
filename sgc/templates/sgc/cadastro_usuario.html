@@ -15,13 +15,12 @@
     </div>
 
     <div class="mb-3">
-        {{ form.tipo_acesso.label_tag }}
         {% bootstrap_field form.tipo_acesso %}
     </div>
 
     <div class="d-grid gap-2">
-        {% bootstrap_button button_type="submit" content="Próximo" %}
-        <button type="button" class="btn btn-secondary back-button">Voltar</button>
+        {% bootstrap_button button_type="submit" content="Entrar" %}
+        <a href="{% url 'index' %}" class="back-button">Voltar</a>
     </div>
 </form>
 

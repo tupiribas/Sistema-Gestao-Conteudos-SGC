@@ -3,11 +3,12 @@ from django.urls import reverse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect, requires_csrf_token
+from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from gotrue.errors import AuthApiError
 from sgc.models import TipoAcesso, Usuario, Professor, Aluno
 
-from .forms import CadastrarAlunoForm, CadastrarProfessorForm, CadastroUsuarioForm, LoginForm
+from .forms import AlunoForm, CadastrarAlunoForm, CadastrarProfessorForm, CadastroUsuarioForm, LoginForm, ProfessorForm, UsuarioForm
 
 
 def index(request):
@@ -55,12 +56,22 @@ def processar_cadastro_aluno_view(request):
             curso = form.cleaned_data['curso']
             turma = form.cleaned_data['turma']
 
-            # Salve o usuário e o aluno no banco de dados
-            usuario = Usuario.objects.create(
-                nome=nome, sobrenome=sobrenome, email=email, tipo_acesso=TipoAcesso.objects.get(id=tipo_acesso)
+            # Obter configurações padrão
+            _supabase = settings.SUPABASE
+            # Cadastrar authenticação
+            _response = _supabase.auth.sign_up(
+                {
+                    "email": email,
+                    "password": password, }
             )
-            aluno = Aluno.objects.create(
-                usuario=usuario, curso=curso, turma=turma)
+
+            # Salve o usuário e o aluno no banco de dados
+            _usuario = Usuario.objects.create(
+                nome=nome, sobrenome=sobrenome, email=email, tipo_acesso=TipoAcesso.objects.get(
+                    id=tipo_acesso)
+            )
+            _aluno = Aluno.objects.create(
+                usuario=_usuario, curso=curso, turma=turma)
             messages.success(
                 request, 'Cadastro de aluno realizado com sucesso!')
             del request.session['cadastro_data']
@@ -85,12 +96,23 @@ def processar_cadastro_professor_view(request):
             tipo_acesso = int(cadastro_data.get('tipo_acesso'))
             formacao = form.cleaned_data['formacao']
             area_atuacao = form.cleaned_data['area_atuacao']
-            # Salvando o usuário e o professor no banco de dados
-            usuario = Usuario.objects.create(
-                nome=nome, sobrenome=sobrenome, email=email, tipo_acesso=TipoAcesso.objects.get(id=tipo_acesso)
+
+            # Obter configurações padrão
+            _supabase = settings.SUPABASE
+            # Cadastrar authenticação
+            _response = _supabase.auth.sign_up(
+                {
+                    "email": email,
+                    "password": password, }
             )
-            professor = Professor.objects.create(
-                usuario=usuario, formacao=formacao, area_atuacao=area_atuacao)
+
+            # Salvando o usuário e o professor no banco de dados
+            _usuario = Usuario.objects.create(
+                nome=nome, sobrenome=sobrenome, email=email, tipo_acesso=TipoAcesso.objects.get(
+                    id=tipo_acesso)
+            )
+            _professor = Professor.objects.create(
+                usuario=_usuario, formacao=formacao, area_atuacao=area_atuacao)
             messages.success(
                 request, 'Cadastro de professor realizado com sucesso!')
             del request.session['cadastro_data']
@@ -120,10 +142,10 @@ def login_view(request):
                         # Sessão expira quando o navegador é fechado
                         request.session.set_expiry(0)
                     return redirect(index)
-                # else:
-                #     pass
-                #     messages.error(request, f"Erro ao fazer login com usuario. Verifique se você ja fez login.")
-                #     return redirect(login_view)
+                else:
+                    messages.error(
+                        request, f"Erro ao fazer login com usuario. Verifique se você ja fez login.")
+                    return redirect(login_view)
             except Exception:
                 messages.error(request, f"Erro do ao entrar como {
                                email}: {user}")
@@ -131,6 +153,36 @@ def login_view(request):
     else:
         form = LoginForm()
     return render(request, 'sgc/login.html', {'form': form})
+
+
+@login_required(login_url='/login')
+def perfil_view(request):
+    try:
+        user = Usuario.objects.get(email=request.user.email)
+        if str(user.tipo_acesso) == "Professor":
+            perfil = Professor.objects.get()
+            form_class = ProfessorForm
+        elif str(user.tipo_acesso) == "Aluno":
+            perfil = Aluno.objects.get()
+            form_class = AlunoForm
+        else:
+            perfil = user
+            form_class = UsuarioForm
+    except Usuario.DoesNotExist as e:
+        print("Usuário não existe!", e)
+        messages.error(request, 'Usuário não existe!')
+
+    if request.method == 'POST':
+        form = form_class(request.POST, instance=perfil)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            # Redireciona para a mesma página após a atualização
+            return redirect(perfil_view)
+        else:
+            form = form_class(instance=perfil)
+
+    return render(request, 'sgc/perfil.html', {'form': form_class, 'perfil': perfil, 'usuario': user})
 
 
 def logout_view(request):
