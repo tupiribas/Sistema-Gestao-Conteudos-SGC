@@ -1,0 +1,245 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  background: url("bg3.png") no-repeat center center;
+  background-size: cover;
+  height: 92vh;
+  position: relative; /* Necessário para aplicar o desfoque */
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+li, a, button{
+  font-family: "Montserrat",sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  color: aliceblue;
+  text-decoration: none;
+  background-color: rgb(17, 17, 24);
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 10%;
+  height: 8vh;
+  background-color: rgb(17, 17, 24);
+}
+
+.logo {
+  cursor: pointer;
+  width: 150px;
+  border-radius: 3px;
+  float: left;
+  margin-right: 20px;
+}
+
+.nav__links {
+  list-style: none;
+  background-color: rgb(17, 17, 24);
+
+}
+
+.nav__links li {
+  display:inline-block;
+  padding: 0px 20px;
+}
+
+.nav__links li a {
+  transition: all 0.3s ease 0s;
+
+}
+
+.nav__links li a:hover {
+  color:#0088a9
+  
+}
+
+button {
+  padding: 9px 25px;
+  background-color: rgb(69, 142, 160,1);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease 0s;
+}
+
+button:hover{
+  background-color: rgb(0,136,169,0.8);
+}
+
+
+/* ----------------------- index - PG1 --------------------------*/
+
+.container_index {
+  font-family: "Monteserrat", sans-serif;
+  position: absolute;
+  top: -18%;
+  bottom: 0%;
+  width: 1000px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 30px;
+  margin-top: 8%;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+}
+
+.container_index .card_index {
+  width: 700px;
+  position: relative;
+  height: 500px;
+  margin: 30px 30px;
+  padding: 20px 20px;
+  display:flex;
+  flex-direction: column;
+  transition: 0.3% ease-in-out;
+  margin-top: 5%;
+  border-radius: 30px;
+  align-items: center;
+  backdrop-filter: blur(30px);
+  box-shadow: 0px 0px 16px 8px rgba(0,0,0,0.1);
+}
+
+.img_index{
+  max-width: 80%;
+  border-radius: 10px;
+}
+
+.card_txt {
+  color:aliceblue;
+  font-family: "Montserrat",sans-serif;
+  font-weight: 500;
+  font-size: 25px;
+  padding: 10px;
+  margin-bottom: 10px;
+  color: aliceblue;
+}
+
+
+/* ----------------------- Advertisement page - PG2 --------------------------*/
+
+.container {
+  font-family: "Monteserrat", sans-serif;
+  position: relative;
+  width: 1100px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 30px;
+  margin-top: 8%;
+}
+
+.container .card {
+  width: 300px;
+  position: relative;
+  height: 400px;
+  background: #f0f0f0;
+  margin: 5px 5px;
+  padding: 20px 20px;
+  display: flex;
+  flex-direction: column;
+  transition: 0.3% ease-in-out;
+  margin-top: 5%;
+  border-radius: 10px;
+}
+
+.container .card .imgbx{
+  position: relative;
+  width: 260px;
+  height: 260px;
+
+}
+
+.container .card .imgbx img{
+  max-width: 100%;
+  border-radius: 10px;
+
+}
+
+.imgbx:hover img{
+  transform: scale(1.1);
+}
+
+/* ----------------------- Login page - PG3 --------------------------*/
+
+/* Modal estilos */
+.modal {
+  display: flex; 
+  position: fixed;
+  backdrop-filter: blur(10px);
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+  padding-top: 60px;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 400px;
+  border-radius: 10px;
+  font-family: "Montserrat",sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.closeBtn {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.closeBtn:hover,
+.closeBtn:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-top: 10px;
+}
+
+input {
+  padding: 10px;
+  margin-top: 5px;
+  font-size: 16px;
+}
+
+button[type="submit"] {
+  margin-top: 20px;
+  background-color: rgb(69, 142, 160,1);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: rgb(69, 142, 160,1);
+}
+
