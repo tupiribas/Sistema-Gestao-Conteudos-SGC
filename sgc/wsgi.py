@@ -14,3 +14,15 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sgc.settings')
 
 application = get_wsgi_application()
+# import os
+# import sys
+
+# # Adicione o caminho para o diretório do seu projeto ao Python Path
+# path = '/home/Tupi/sgc' 
+# if path not in sys.path:
+#     sys.path.append(path)
+
+# os.environ['DJANGO_SETTINGS_MODULE'] = 'sgc.settings'
+
+# from django.core.wsgi import get_wsgi_application
+# application = get_wsgi_application()

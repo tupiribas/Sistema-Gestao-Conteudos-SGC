@@ -171,6 +171,7 @@ def perfil_view(request):
     except Usuario.DoesNotExist as e:
         print("Usuário não existe!", e)
         messages.error(request, 'Usuário não existe!')
+        redirect(login)
 
     if request.method == 'POST':
         form = form_class(request.POST, instance=perfil)
