@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -6,9 +6,10 @@ from django.views.decorators.csrf import csrf_protect, requires_csrf_token
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from gotrue.errors import AuthApiError
-from sgc.models import TipoAcesso, Usuario, Professor, Aluno
+from sgc.models import (Post, TipoAcesso, Usuario, Professor, Aluno)
 
-from .forms import AlunoForm, CadastrarAlunoForm, CadastrarProfessorForm, CadastroUsuarioForm, LoginForm, ProfessorForm, UsuarioForm
+from .forms import (AlunoForm, CadastrarAlunoForm, CadastrarProfessorForm,
+                    CadastroUsuarioForm, LoginForm, PostForm, ProfessorForm, UsuarioForm)
 
 
 def index(request):
@@ -186,9 +187,52 @@ def perfil_view(request):
     return render(request, 'sgc/perfil.html', {'form': form_class, 'perfil': perfil, 'usuario': user})
 
 
+@login_required
+def listar_posts(request):
+    posts = Post.objects.all()
+    return render(request, 'sgc/listar_posts.html', {'posts': posts})
+
+
+@login_required
+def criar_post(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            return redirect('listar_posts')
+    else:
+        form = PostForm()
+    return render(request, 'sgc/criar_post.html', {'form': form})
+
+
+@login_required
+def editar_post(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    if request.method == 'POST':
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_posts')
+    else:
+        form = PostForm(instance=post)
+    return render(request, 'sgc/editar_post.html', {'form': form, 'post': post})
+
+
+@login_required
+def deletar_post(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    if request.method == 'POST':
+        post.delete()
+        return redirect('listar_posts')
+    return render(request, 'sgc/deletar_post.html', {'post': post})
+
+
 def criar_publicacao(request):
     # ... (lógica para criar a publicação)
     return render(request, 'sgc/criar_publicacao.html')
+
 
 def logout_view(request):
     logout(request)

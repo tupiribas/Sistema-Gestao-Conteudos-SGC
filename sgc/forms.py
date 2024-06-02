@@ -1,6 +1,6 @@
 from django import forms
 from django import forms
-from .models import Aluno, Professor, Usuario, TipoAcesso
+from .models import Aluno, Post, Professor, Usuario, TipoAcesso
 
 
 class CadastroUsuarioForm(forms.ModelForm):
@@ -54,6 +54,10 @@ class CadastrarAlunoForm(forms.ModelForm):
         model = Aluno
         fields = ['curso', 'turma']
 
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'summary', 'content']
 
 class LoginForm(forms.Form):
     email = forms.EmailField(label='E-mail', required=True)
