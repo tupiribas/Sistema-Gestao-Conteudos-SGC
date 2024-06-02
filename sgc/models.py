@@ -1,6 +1,8 @@
 from django.db import models
 from uuid import uuid4
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from ckeditor.fields import RichTextField
+from ckeditor_uploader.fields import RichTextUploadingField
 
 
 def generate_matricula():
@@ -101,6 +103,15 @@ class Aluno(models.Model):
         return f"{self.usuario.nome} {self.usuario.sobrenome} - {self.matricula}"
 
 
+class Post(models.Model):
+    title = models.CharField(max_length=255)
+    summary = RichTextField()
+    content = RichTextUploadingField()
+    author = models.ForeignKey(Usuario, on_delete=models.PROTECT)
+    created_at = models.DateField(auto_now=True)
+
+    def __str__(self):
+        return self.title
 
 
 # class Turma(models.Model):
@@ -110,8 +121,9 @@ class Aluno(models.Model):
 #     alunos = models.ManyToManyField(Aluno, related_name='turmas')
     # Implementação futura (data, horário e sala)
 
-    def __str__(self):
-        return self.nome
+
+    # def __str__(self):
+    #     return self.nome
 
 # from django.db import models
 # from .models import Usuario, Professor
