@@ -7,6 +7,7 @@
     <title>Sistema de Gestão de Conteúdo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     {% comment %} Imperid dar zoom {% endcomment %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
@@ -106,21 +107,41 @@
             font-size: 30px; /* Tamanho da fonte do "X" */
             cursor: pointer; /* Adiciona o cursor de ponteiro ao passar o mouse */
         }
+
+        /* Estilos para o botão de perfil */
+        #perfilBtn {
+            position: absolute;
+            top: 10px; /* Ajuste o espaçamento superior conforme necessário */
+            left: 10px; /* Ajuste o espaçamento esquerdo conforme necessário */
+            z-index: 1000; /* Garante que o botão fique acima de outros elementos */
+        }
+
+        .btn-outline-secondary {
+            background-color: #f8f9fa; /* Cor de fundo da navbar */
+            border-color: #f8f9fa; /* Cor da borda da navbar */
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #e2e6ea; /* Cor de fundo mais escura ao passar o mouse */
+            border-color: #e2e6ea; /* Cor da borda mais escura ao passar o mouse */
+        }
     </style>
 </head>
 <body>
-    {% comment %} Navegação - Barra de navegação superior {% endcomment %}
+    {% comment %} Navegação - Barra de navegação superior; verifica se foi autenticado {% endcomment %}
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
             <a class="navbar-brand d-lg-none" href="#" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
                 <i class="bi bi-list"></i>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav align-items-center">
                     {% if user.is_authenticated %}
+                        {% comment %} Botão para redirecionar ao perfil {% endcomment %}
+                        <a id="perfilBtn" class="btn btn-outline-secondary rounded-circle" href="{% url 'perfil_view' %}" style="margin-right: 10px;">
+                            <i class="bi-person-circle" style="font-size: 1.5rem;"></i>
+                        </a>
+                        {% comment %} Botão para o usuário sair da seção {% endcomment %}
                         <li class="nav-item">
                             <a class="nav-link botao-sair" href="{% url 'logout' %}">Sair</a>
                         </li>
@@ -137,7 +158,7 @@
         </div>
     </nav>
 
-    {% comment %} Navegação - Menu lateral {% endcomment %}
+    {% comment %} Navegação - Menu lateral - Responsivo {% endcomment %}
     <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="sidebarOffcanvasLabel">Menu</h5>
@@ -146,13 +167,13 @@
         <div class="offcanvas-body d-flex flex-column"> 
             <ul class="nav flex-column">
                 {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link active" href="perfil/">Perfil</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="perfil/">Perfil</a>
+                    </li>
                 {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Item 2</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Item 2</a>
+                    </li>
             </ul>
             {% comment %} Mostrar na tela com base no {% endcomment %}
             <div class="mt-auto">  
@@ -162,6 +183,10 @@
                         <a class="btn btn-secondary" href="{% url 'cadastrar_usuario_view' %}">Cadastre-se</a>
                     </div>
                 {% else %}
+                    {% comment %} Botão para redirecionar ao perfil {% endcomment %}
+                    <a class="btn btn-outline-secondary rounded-circle" href="{% url 'perfil_view' %}" style="margin-right: 10px;">
+                        <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i>
+                    </a>
                     <a class="nav-item nav-link botao-sair" href="{% url 'logout' %}">Sair</a>
                 {% endif %}
             </div>
