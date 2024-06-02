@@ -1,24 +1,86 @@
 {% extends 'sgc/base.html' %}
 {% load django_bootstrap5 %}
 
+
 {% block content %}
-<h2>Meu Perfil</h2>
-
-<form method="post">
-    {% csrf_token %}
-    <h3>Dados Pessoais</h3>
-    {% bootstrap_label usuario.nome %} {% bootstrap_label usuario.sobrenome %}
-    </br>
-    {% bootstrap_label usuario.email %}
-    </br>
-    {% bootstrap_label usuario.tipo_acesso %}
-    <h3>Dados Adicionais</h3>
-    Formação: {% bootstrap_label perfil.formacao %}
-    </br>
-    Área de atuação: {% bootstrap_label perfil.area_atuacao %}
-    <h3>Editar Dados Adicionais:</h3>
-    {% bootstrap_form form %}
-    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-</form>
-
+<style>    
+    .profile-container {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .profile-header {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 0;
+        border-radius: 10px 10px 0 0;
+    }
+    
+    .profile-content {
+        margin: 20px 0;
+    }
+    
+    .profile-item {
+        margin: 10px 0;
+    }
+    
+    .profile-item strong {
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+    }
+    
+    .profile-item span {
+        color: #666;
+    }
+</style>
+<div class="container mt-4">
+    <a href="javascript:history.back()" class="btn btn-outline-secondary mb-3">
+        <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title mb-0">Meu Perfil</h2>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <h3>Dados Pessoais</h3>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Nome: </strong>{% bootstrap_label usuario.nome %} {% bootstrap_label usuario.sobrenome %} <strong> | </strong> {% bootstrap_label usuario.tipo_acesso %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                        </div>
+                        <div class="col-md-6">
+                            <strong>E-mail: </strong>{% bootstrap_label usuario.email %}
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <h3>Dados Adicionais</h3>
+                    <div class="mb-3">
+                        <strong>Formação: </strong> {% bootstrap_label perfil.formacao %}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Área de Atuação: </strong> {% bootstrap_label perfil.area_atuacao %}
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <h3>Editar Dados Adicionais:</h3>
+                    {% bootstrap_form form %}
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Salvar dados adicionais</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
+

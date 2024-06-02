@@ -186,6 +186,10 @@ def perfil_view(request):
     return render(request, 'sgc/perfil.html', {'form': form_class, 'perfil': perfil, 'usuario': user})
 
 
+def criar_publicacao(request):
+    # ... (lógica para criar a publicação)
+    return render(request, 'sgc/criar_publicacao.html')
+
 def logout_view(request):
     logout(request)
     return redirect(index)  # Redireciona para a página de login

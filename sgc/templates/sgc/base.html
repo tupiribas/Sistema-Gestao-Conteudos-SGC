@@ -108,14 +108,6 @@
             cursor: pointer; /* Adiciona o cursor de ponteiro ao passar o mouse */
         }
 
-        /* Estilos para o botão de perfil */
-        #perfilBtn {
-            position: absolute;
-            top: 10px; /* Ajuste o espaçamento superior conforme necessário */
-            left: 10px; /* Ajuste o espaçamento esquerdo conforme necessário */
-            z-index: 1000; /* Garante que o botão fique acima de outros elementos */
-        }
-
         .btn-outline-secondary {
             background-color: #f8f9fa; /* Cor de fundo da navbar */
             border-color: #f8f9fa; /* Cor da borda da navbar */
@@ -125,39 +117,37 @@
             background-color: #e2e6ea; /* Cor de fundo mais escura ao passar o mouse */
             border-color: #e2e6ea; /* Cor da borda mais escura ao passar o mouse */
         }
+
+        .barra-navegacao-flutuante {
+            display: flex; /* Ativa o flexbox */
+            flex-direction: column; /* Define a direção para coluna */
+            position: absolute;
+            left: 20px;   /* Distância da esquerda da tela */
+            /* transform: translateX(-50%); */ /* Remove a centralização horizontal */
+            background-color: #f8f9fa; /* Cor de fundo */
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+            z-index: 1; /* Garante que a barra fique acima de outros elementos */
+        }
+
+        .barra-navegacao-flutuante a:first-child {
+            margin-bottom: 10px; /* Adiciona uma margem inferior de 10px ao primeiro botão */
+        }
+        @media (max-width: 992px) {
+            .barra-navegacao-flutuante {
+                display: none;
+            }
+        }
+        .barra-navegacao-flutuante i {
+            color: #0d6efd; /* Cor azul primário do Bootstrap */
+        }
+        #btn-sair {
+            color: red; /* Cor do texto em vermelho */
+        }
     </style>
 </head>
 <body>
-    {% comment %} Navegação - Barra de navegação superior; verifica se foi autenticado {% endcomment %}
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container-fluid">
-            <a class="navbar-brand d-lg-none" href="#" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
-                <i class="bi bi-list"></i>
-            </a>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav align-items-center">
-                    {% if user.is_authenticated %}
-                        {% comment %} Botão para redirecionar ao perfil {% endcomment %}
-                        <a id="perfilBtn" class="btn btn-outline-secondary rounded-circle" href="{% url 'perfil_view' %}" style="margin-right: 10px;">
-                            <i class="bi-person-circle" style="font-size: 1.5rem;"></i>
-                        </a>
-                        {% comment %} Botão para o usuário sair da seção {% endcomment %}
-                        <li class="nav-item">
-                            <a class="nav-link botao-sair" href="{% url 'logout' %}">Sair</a>
-                        </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'cadastrar_usuario_view' %}"><button id="openModalBtn" class="btn btn-primary">Cadastro</button></a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
-
     {% comment %} Navegação - Menu lateral - Responsivo {% endcomment %}
     <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
         <div class="offcanvas-header">
@@ -193,20 +183,48 @@
         </div>
     </div>
     
+    {% comment %} Barra de navegação flutuante {% endcomment %}
+    <div class="barra-navegacao-flutuante">
+        {% if user.is_authenticated %}
+            {% comment %} Botão para redirecionar ao perfil - requer autenticação {% endcomment %}
+            <a href="{% url 'perfil_view' %}" class="btn btn-outline-secondary rounded-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="Seu Perfil">
+                <i class="bi-person-circle" style="font-size: 1.5rem;"></i>
+            </a>
+            {% comment %} Botão redireciona para a tela inicial (home)  - NÃO requer autenticaçã {% endcomment %}
+            <a href="{% url 'index' %}" class="btn btn-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Tela de Inicio">
+                <i class="bi bi-house-fill" style="font-size: 1.5rem;"></i>
+            </a>
+            {% comment %} Cria publicacao para os alunos - requer autenticação {% endcomment %}
+            <a href="" class="btn btn-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Criar Publicação">
+                <i class="bi bi-pencil-square" style="font-size: 1.5rem;"></i> 
+            </a>            
+            {% comment %} Botão para sair da seção logada  - requer autenticação {% endcomment %}
+            <hr class="my-2">
+            <a href="{% url 'logout' %}" class="btn btn-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Sair do Sistema">
+                <i id="btn-sair" class="bi bi-box-arrow-left" style="font-size: 1.5rem;"></i>
+            </a>
+        {% else %}
+            <a href="{% url 'index' %}" class="btn btn-link" data-bs-toggle="tooltip" data-bs-placement="right" title="Tela de Inicio">
+                <i class="bi bi-house-fill" style="font-size: 1.5rem;"></i>
+            </a>
+            <a href="{% url 'login' %}" class="btn btn-outline-secondary rounded-circle mb-3" data-bs-toggle="tooltip" data-bs-placement="right" title="Entrar">
+                <i class="bi bi-box-arrow-in-right" style="font-size: 1.5rem;"></i>
+            </a>
+            <a href="{% url 'cadastrar_usuario_view' %}" class="btn btn-link btn-cadastrar" data-bs-toggle="tooltip" data-bs-placement="right" title="Cadastrar">
+                <i class="bi bi-person-plus-fill" style="font-size: 1.5rem;"></i>
+            </a>
+        {% endif %}
+    </div>
     <main class="container mt-5">
         {% block content %}{% endblock %}
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js">
-        document.addEventListener('wheel', function(e) {
-            if (e.ctrlKey) {
-              e.preventDefault(); // Impede o zoom com Ctrl + scroll
-            }
-          });
-          
-          document.addEventListener('gesturestart', function(e) {
-            e.preventDefault(); // Impede o zoom com gestos em dispositivos móveis
-          });
+    </script>
+
+    <script>
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
     </script>
 </body>
 </html>

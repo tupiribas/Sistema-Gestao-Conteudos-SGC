@@ -101,6 +101,8 @@ class Aluno(models.Model):
         return f"{self.usuario.nome} {self.usuario.sobrenome} - {self.matricula}"
 
 
+
+
 # class Turma(models.Model):
 #     nome = models.CharField(max_length=50, unique=True)
 #     descricao = models.TextField(blank=True)

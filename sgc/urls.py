@@ -16,14 +16,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import cadastrar_usuario_view, login_view, logout_view, index, perfil_view, processar_cadastro_aluno_view, processar_cadastro_professor_view
+from .views import (cadastrar_usuario_view, login_view, logout_view, index, perfil_view,
+                    processar_cadastro_aluno_view, processar_cadastro_professor_view)
 
 urlpatterns = [
     path(route='admin/', view=admin.site.urls),
     path(route='', view=index, name='index'),
-    path(route='cadastrar/', view=cadastrar_usuario_view, name='cadastrar_usuario_view'),
-    path('cadastrar/aluno/', processar_cadastro_aluno_view, name='processar_cadastro_aluno_view'),
-    path('cadastrar/professor/', processar_cadastro_professor_view, name='processar_cadastro_professor_view'),
+    path(route='cadastrar/', view=cadastrar_usuario_view,
+         name='cadastrar_usuario_view'),
+    path('cadastrar/aluno/', processar_cadastro_aluno_view,
+         name='processar_cadastro_aluno_view'),
+    path('cadastrar/professor/', processar_cadastro_professor_view,
+         name='processar_cadastro_professor_view'),
+    # path('criar-publicacao/', criar_publicacao_view,
+    #      name='criar_publicacao_view'),
     path(route='login/', view=login_view, name='login'),
     path(route='perfil/', view=perfil_view, name='perfil_view'),
     path(route='logout/', view=logout_view, name='logout'),
