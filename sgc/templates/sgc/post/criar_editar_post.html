@@ -1,0 +1,15 @@
+{% extends 'sgc/base.html' %}
+{% load bootstrap5 %}
+{% load static %}
+
+{% block content %}
+
+<h2>{% if post %}Editar Publicação{% else %}Criar Nova Publicação{% endif %}</h2>
+
+<form method="post" enctype="multipart/form-data"> {% csrf_token %}
+    {% bootstrap_form form %}
+    <script src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+
+{% endblock %}

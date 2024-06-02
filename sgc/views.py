@@ -188,13 +188,13 @@ def perfil_view(request):
 
 
 @login_required
-def listar_posts(request):
+def listar_posts_view(request):
     posts = Post.objects.all()
-    return render(request, 'sgc/listar_posts.html', {'posts': posts})
+    return render(request, 'sgc/post/listar_posts.html', {'posts': posts})
 
 
 @login_required
-def criar_post(request):
+def criar_post_view(request):
     if request.method == 'POST':
         form = PostForm(request.POST)
         if form.is_valid():
@@ -204,11 +204,11 @@ def criar_post(request):
             return redirect('listar_posts')
     else:
         form = PostForm()
-    return render(request, 'sgc/criar_post.html', {'form': form})
+    return render(request, 'sgc/post/criar_editar_post.html', {'form': form})
 
 
 @login_required
-def editar_post(request, post_id):
+def editar_post_view(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     if request.method == 'POST':
         form = PostForm(request.POST, instance=post)
@@ -217,21 +217,16 @@ def editar_post(request, post_id):
             return redirect('listar_posts')
     else:
         form = PostForm(instance=post)
-    return render(request, 'sgc/editar_post.html', {'form': form, 'post': post})
+    return render(request, 'sgc/post/criar_editar_post.html', {'form': form, 'post': post})
 
 
 @login_required
-def deletar_post(request, post_id):
+def deletar_post_view(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     if request.method == 'POST':
         post.delete()
         return redirect('listar_posts')
-    return render(request, 'sgc/deletar_post.html', {'post': post})
-
-
-def criar_publicacao(request):
-    # ... (lógica para criar a publicação)
-    return render(request, 'sgc/criar_publicacao.html')
+    return render(request, 'sgc/post/deletar_post.html', {'post': post})
 
 
 def logout_view(request):

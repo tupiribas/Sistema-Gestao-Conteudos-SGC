@@ -1,0 +1,25 @@
+{% extends 'sgc/base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+
+<h2>Publicações</h2>
+
+<a href="{% url 'criar_post' %}" class="btn btn-primary mb-3">Criar Nova Publicação</a>
+
+<div class="row">
+    {% for post in posts %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <p class="card-text">{{ post.summary|safe }}</p>
+                    <a href="{% url 'editar_post' post.id %}" class="btn btn-secondary">Editar</a>
+                    <a href="{% url 'deletar_post' post.id %}" class="btn btn-danger">Deletar</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
