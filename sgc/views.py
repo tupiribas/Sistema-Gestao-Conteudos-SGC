@@ -8,9 +8,10 @@ from django.views.decorators.csrf import csrf_protect, requires_csrf_token
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from gotrue.errors import AuthApiError
-from sgc.models import (Post, TipoAcesso, Usuario, Professor, Aluno)
+from sgc.models import (Coordenador, Post, TipoAcesso,
+                        Usuario, Professor, Aluno)
 
-from .forms import (AlunoForm, CadastrarAlunoForm, CadastrarProfessorForm,
+from .forms import (AlunoForm, CadastrarAlunoForm, CadastrarProfessorForm, CadastroCoordenadorForm,
                     CadastroUsuarioForm, LoginForm, PostFiltrarForm, PostForm, ProfessorForm, UsuarioForm)
 
 
@@ -39,6 +40,8 @@ def cadastrar_usuario_view(request):
                 return redirect(reverse('processar_cadastro_aluno_view'))
             elif tipo_acesso_obj.nome == "Professor":
                 return redirect(reverse('processar_cadastro_professor_view'))
+            elif tipo_acesso_obj.nome == "Coordenação":
+                return redirect(reverse('processar_cadastro_coordenador_view'))
     else:
         form = CadastroUsuarioForm()
     return render(request, 'sgc/cadastro_usuario.html', {'form': form})
@@ -123,6 +126,52 @@ def processar_cadastro_professor_view(request):
     else:
         form = CadastrarProfessorForm()
     return render(request, 'sgc/cadastro_professor.html', {'form': form})
+
+
+# @requires_csrf_token
+# @csrf_protect
+# def processar_cadastro_coordenador_view(request):
+#     if request.method == 'POST':
+#         form = CadastroCoordenadorForm(request.POST)
+#         if form.is_valid():
+#             cadastro_data = request.session.get('cadastro_data', {})
+#             nome = cadastro_data.get('nome')
+#             sobrenome = cadastro_data.get('sobrenome')
+#             email = cadastro_data.get('email')
+#             tipo_acesso = int(cadastro_data.get('tipo_acesso'))
+
+#             _supabase = settings.SUPABASE
+
+#             try:
+#                 # Cria o usuário no Django (após o sucesso no Supabase)
+#                 _tipo_acesso = tipo_acesso = TipoAcesso.objects.get(
+#                     id=tipo_acesso)
+
+#                 _usuario = Usuario.objects.create(
+#                     nome=nome,
+#                     sobrenome=sobrenome,
+#                     email=email,
+#                     tipo_acesso=_tipo_acesso,
+#                     is_staff=True,  # Concede permissão de acesso ao Django Admin
+#                     is_superuser=True  # Concede permissão de superusuário
+#                 )
+#                 # Cria o perfil de coordenador
+#                 Coordenador.objects.create(usuario=_usuario)
+
+#                 messages.success(
+#                     request, 'Coordenador cadastrado com sucesso!')
+#                 # Redireciona para o Django Admin
+#                 return redirect('admin:index')
+
+#             except AuthApiError as e:
+#                 messages.error(
+#                     request, f"Erro na API de autenticação do Supabase: {e}")
+#             except Exception as e:
+#                 messages.error(request, f"Erro inesperado: {e}")
+
+#     else:
+#         form = CadastroCoordenadorForm()
+#     return render(request, 'sgc/cadastro_coordenador.html', {'form': form})
 
 
 @requires_csrf_token

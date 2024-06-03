@@ -33,15 +33,19 @@ class UsuarioForm(forms.ModelForm):
         # Campos comuns a todos os usuários
         fields = ['nome', 'sobrenome', 'email']
 
+
 class ProfessorForm(forms.ModelForm):
     class Meta:
         model = Professor
-        fields = ['formacao', 'area_atuacao']  # Campos específicos de professor
+        # Campos específicos de professor
+        fields = ['formacao', 'area_atuacao']
+
 
 class AlunoForm(forms.ModelForm):
     class Meta:
         model = Aluno
         fields = ['curso', 'turma']
+
 
 class CadastrarProfessorForm(forms.ModelForm):
     class Meta:
@@ -49,23 +53,36 @@ class CadastrarProfessorForm(forms.ModelForm):
         fields = ['formacao', 'area_atuacao']
 
 
+# class CadastroCoordenadorForm(forms.ModelForm):
+#     class Meta:
+#         model = Usuario
+#         # Campos comuns a todos os usuários
+#         fields = ['nome', 'sobrenome', 'email']
+
+
 class CadastrarAlunoForm(forms.ModelForm):
     class Meta:
         model = Aluno
         fields = ['curso', 'turma']
+
 
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ['titulo', 'sumario', 'texto']
 
+
 class PostFiltrarForm(forms.Form):
     titulo = forms.CharField(label='Título', required=False)
     sumario = forms.CharField(label='Sumário', required=False)
-    criado_em_inicio = forms.DateField(label='Criado em (início)', required=False, widget=forms.DateInput(attrs={'type': 'date'}))
-    criado_em_fim = forms.DateField(label='Criado em (fim)', required=False, widget=forms.DateInput(attrs={'type': 'date'}))
-    editado_em_inicio = forms.DateField(label='Editado em (início)', required=False, widget=forms.DateInput(attrs={'type': 'date'}))
-    editado_em_fim = forms.DateField(label='Editado em (fim)', required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    criado_em_inicio = forms.DateField(
+        label='Criado em (início)', required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    criado_em_fim = forms.DateField(
+        label='Criado em (fim)', required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    editado_em_inicio = forms.DateField(
+        label='Editado em (início)', required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    editado_em_fim = forms.DateField(
+        label='Editado em (fim)', required=False, widget=forms.DateInput(attrs={'type': 'date'}))
 
 
 class LoginForm(forms.Form):

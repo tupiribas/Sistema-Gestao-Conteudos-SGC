@@ -1,3 +1,4 @@
+from platform import processor
 from django.db import models
 from uuid import uuid4
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
@@ -70,9 +71,11 @@ class Usuario(AbstractBaseUser):
 class TipoAcesso(models.Model):
     ALUNO = 'aluno'
     PROFESSOR = 'professor'
+    COORDENADOR = 'cordenador'
     TIPOS_ACESSO_CHOICES = [
         (ALUNO, 'aluno'),
-        (PROFESSOR, 'rofessor'),
+        (PROFESSOR, 'professor'),
+        (COORDENADOR, 'coordenador'),
     ]
     id = models.BigAutoField(primary_key=True)
     nome = models.CharField(
@@ -103,14 +106,25 @@ class Aluno(models.Model):
         return f"{self.usuario.nome} {self.usuario.sobrenome} - {self.matricula}"
 
 
+class Coordenador(models.Model):
+    usuario = models.OneToOneField(
+        Usuario, on_delete=models.CASCADE, to_field='matricula', unique=True, related_name='coordenador', null=False)
+    professores = models.ManyToManyField(Professor, related_name='professores')
+
+    def __str__(self):
+        return f"{self.usuario.nome} {self.usuario.sobrenome} - Coordenador"
+
+
 class Post(models.Model):
     titulo = models.CharField(max_length=50)
     sumario = models.CharField(max_length=100)
     texto = models.TextField(max_length=255)
     autor = models.ForeignKey(
         Usuario, on_delete=models.CASCADE, to_field='matricula', related_name="autor_id", null=False)
-    criado_em = models.DateTimeField(auto_now_add=True, editable=False, null=False, blank=False)
-    editado_em = models.DateTimeField(auto_now=True, editable=True, null=True, blank=False)
+    criado_em = models.DateTimeField(
+        auto_now_add=True, editable=False, null=False, blank=False)
+    editado_em = models.DateTimeField(
+        auto_now=True, editable=True, null=True, blank=False)
 
     def __str__(self):
         return self.titulo

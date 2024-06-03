@@ -5,8 +5,9 @@
 
 <h1>Publicações</h1>
 <hr class="my-2">
-<h2>Filtros</h2>
 
+{% comment %} Filtrar informações {% endcomment %}
+<h2>Filtros</h2>
 <form method="get" class="mb-4">
     {% csrf_token %}
     <div class="row">
@@ -53,7 +54,8 @@
     <a href="{% url 'listar_posts_view' %}" class="btn btn-secondary mt-3">Limpar Filtros</a>
 </form>
 <hr class="my-2">
-<a href="{% url 'criar_post_view' %}" class="btn btn-primary mb-4">Criar Nova Publicação</a>
+{% comment %} Cadastrar Nova publicaçao {% endcomment %}
+<a href="{% url 'criar_post_view' %}" class="btn btn-primary mb-4">Criar Publicação</a>
 
 <div class="row">
     {% if posts %}

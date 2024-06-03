@@ -1,0 +1,16 @@
+{% extends 'sgc/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<h2>Cadastro de Coordenador</h2>
+
+<form method="POST" id="cadastroCoordenador" action="{% url 'processar_cadastro_coordenador_view' %}">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <div class="d-grid gap-2">
+        {% bootstrap_button button_type="submit" content="Entrar" %}
+        <a href="{% url 'cadastrar_usuario_view' %}" class="back-button">Voltar</a>
+    </div>
+</form>
+{% bootstrap_javascript %}
+{% endblock %}
