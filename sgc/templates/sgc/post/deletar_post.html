@@ -1,0 +1,16 @@
+{% extends 'sgc/base.html' %}
+{% load bootstrap5 %}
+
+{% block content %}
+
+<h2>Deletar Publicação</h2>
+
+<p>Tem certeza que deseja deletar a publicação "{{ post.title }}?"</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Deletar</button>
+    <a href="{% url 'listar_posts' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}

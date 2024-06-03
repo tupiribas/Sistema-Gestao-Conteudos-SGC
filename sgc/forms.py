@@ -57,7 +57,7 @@ class CadastrarAlunoForm(forms.ModelForm):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'summary', 'content']
+        fields = ['titulo', 'sumario', 'texto']
 
 class LoginForm(forms.Form):
     email = forms.EmailField(label='E-mail', required=True)

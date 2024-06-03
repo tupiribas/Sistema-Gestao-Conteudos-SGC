@@ -187,40 +187,49 @@ def perfil_view(request):
     return render(request, 'sgc/perfil.html', {'form': form_class, 'perfil': perfil, 'usuario': user})
 
 
-@login_required
+@login_required(login_url='/login')
 def listar_posts_view(request):
     posts = Post.objects.all()
     return render(request, 'sgc/post/listar_posts.html', {'posts': posts})
 
 
-@login_required
+@login_required(login_url='/login')
+@requires_csrf_token
+@csrf_protect
 def criar_post_view(request):
     if request.method == 'POST':
         form = PostForm(request.POST)
         if form.is_valid():
+            # print(request.user.autor_id)
             post = form.save(commit=False)
-            post.author = request.user
+            matricula = request.user.email
+            usuario = Usuario.objects.get(email=matricula)
+            post.autor = usuario
             post.save()
-            return redirect('listar_posts')
+            return redirect('listar_posts_view')
     else:
         form = PostForm()
     return render(request, 'sgc/post/criar_editar_post.html', {'form': form})
 
 
-@login_required
-def editar_post_view(request, post_id):
-    post = get_object_or_404(Post, pk=post_id)
+@login_required(login_url='/login')
+@requires_csrf_token
+@csrf_protect
+def editar_post_view(request, id):
+    post = get_object_or_404(Post, pk=id)
     if request.method == 'POST':
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
             form.save()
-            return redirect('listar_posts')
+            return redirect('listar_posts_view')
     else:
         form = PostForm(instance=post)
     return render(request, 'sgc/post/criar_editar_post.html', {'form': form, 'post': post})
 
 
-@login_required
+@login_required(login_url='/login')
+@requires_csrf_token
+@csrf_protect
 def deletar_post_view(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     if request.method == 'POST':

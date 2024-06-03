@@ -1,13 +1,16 @@
 {% extends 'sgc/base.html' %}
-{% load bootstrap5 %}
+{% load django_bootstrap5 %}
 {% load static %}
 
 {% block content %}
 
 <h2>{% if post %}Editar Publicação{% else %}Criar Nova Publicação{% endif %}</h2>
 
-<form method="post" enctype="multipart/form-data"> {% csrf_token %}
-    {% bootstrap_form form %}
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% bootstrap_field form.titulo %}
+    {% bootstrap_field form.sumario %}
+    {% bootstrap_field form.texto %}
     <script src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
     <button type="submit" class="btn btn-primary">Salvar</button>
 </form>
