@@ -3,24 +3,79 @@
 
 {% block content %}
 
-<h2>Publicações</h2>
+<h1>Publicações</h1>
+<hr class="my-2">
+<h2>Filtros</h2>
 
-<a href="{% url 'criar_post_view' %}" class="btn btn-primary mb-3">Criar Nova Publicação</a>
-
-<div class="row">
-    {% for post in posts %}
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">{{ post.titulo }}</h5>
-                    <p class="card-text">{{ post.sumario|safe }}</p>
-                    <p class="card-text">{{ post.criado_em|safe }}</p>
-                    <a href="{% url 'editar_post_view' post.id %}" class="btn btn-secondary">Editar</a>
-                    <a href="{% url 'deletar_post_view' %}" class="btn btn-danger">Deletar</a>
-                </div>
+<form method="get" class="mb-4">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="titulo">Título</label>
+                <input type="text" id="titulo" name="titulo" class="form-control" placeholder="Filtrar por título" value="{{ request.GET.titulo }}">
             </div>
         </div>
-    {% endfor %}
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="sumario">Sumário</label>
+                <input type="text" id="sumario" name="sumario" class="form-control" placeholder="Filtrar por sumário" value="{{ request.GET.sumario}}">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group">
+                <label for="criado_em_inicio">Data de Criação Inicial</label>
+                <input type="date" id="criado_em_inicio" name="criado_em_inicio" class="form-control" value="{{ request.GET.criado_em_inicio }}">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label for="criado_em_fim">Data de Criação Final</label>
+                <input type="date" id="criado_em_fim" name="criado_em_fim" class="form-control" value="{{ request.GET.criado_em_fim }}">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label for="editado_em_inicio">Data de Edição Inicial</label>
+                <input type="date" id="editado_em_inicio" name="editado_em_inicio" class="form-control" value="{{ request.GET.editado_em_inicio }}">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label for="editado_em_fim">Data de Edição Final</label>
+                <input type="date" id="editado_em_fim" name="editado_em_fim" class="form-control" value="{{ request.GET.editado_em_fim }}">
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Filtrar</button>
+    <a href="{% url 'listar_posts_view' %}" class="btn btn-secondary mt-3">Limpar Filtros</a>
+</form>
+<hr class="my-2">
+<a href="{% url 'criar_post_view' %}" class="btn btn-primary mb-4">Criar Nova Publicação</a>
+
+<div class="row">
+    {% if posts %}
+        {% for post in posts %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ post.titulo }}</h5>
+                        <p class="card-text">{{ post.sumario|safe }}</p>
+                        <p class="card-text"><small class="text-muted">Criado em: {{ post.criado_em|date:"d/m/Y - H:i:s" }}</small></p>
+                        <p class="card-text"><small class="text-muted">Editado em: {{ post.editado_em|date:"d/m/Y - H:i:s" }}</small></p>
+                        <div class="mt-auto">
+                            <a href="{% url 'editar_post_view' post.id %}" class="btn btn-secondary">Editar</a>
+                            <a href="{% url 'deletar_post_view' post.id %}" class="btn btn-danger">Deletar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+    <h3 class="mt-4">Ainda não possui cadastro de publicações. Cadastre agora mesmo!</h3>
+    {% endif %}
 </div>
 
 {% endblock %}

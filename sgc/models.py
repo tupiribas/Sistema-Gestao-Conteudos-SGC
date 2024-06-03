@@ -109,7 +109,8 @@ class Post(models.Model):
     texto = models.TextField(max_length=255)
     autor = models.ForeignKey(
         Usuario, on_delete=models.CASCADE, to_field='matricula', related_name="autor_id", null=False)
-    criado_em = models.DateField(auto_now=True)
+    criado_em = models.DateTimeField(auto_now_add=True, editable=False, null=False, blank=False)
+    editado_em = models.DateTimeField(auto_now=True, editable=True, null=True, blank=False)
 
     def __str__(self):
         return self.titulo

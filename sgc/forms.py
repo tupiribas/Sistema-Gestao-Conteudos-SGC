@@ -59,6 +59,15 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = ['titulo', 'sumario', 'texto']
 
+class PostFiltrarForm(forms.Form):
+    titulo = forms.CharField(label='Título', required=False)
+    sumario = forms.CharField(label='Sumário', required=False)
+    criado_em_inicio = forms.DateField(label='Criado em (início)', required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    criado_em_fim = forms.DateField(label='Criado em (fim)', required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    editado_em_inicio = forms.DateField(label='Editado em (início)', required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    editado_em_fim = forms.DateField(label='Editado em (fim)', required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+
+
 class LoginForm(forms.Form):
     email = forms.EmailField(label='E-mail', required=True)
     password = forms.CharField(

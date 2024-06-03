@@ -1,3 +1,5 @@
+from datetime import datetime
+from django.utils import timezone
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.contrib.auth import login, logout, authenticate
@@ -9,7 +11,7 @@ from gotrue.errors import AuthApiError
 from sgc.models import (Post, TipoAcesso, Usuario, Professor, Aluno)
 
 from .forms import (AlunoForm, CadastrarAlunoForm, CadastrarProfessorForm,
-                    CadastroUsuarioForm, LoginForm, PostForm, ProfessorForm, UsuarioForm)
+                    CadastroUsuarioForm, LoginForm, PostFiltrarForm, PostForm, ProfessorForm, UsuarioForm)
 
 
 def index(request):
@@ -188,9 +190,59 @@ def perfil_view(request):
 
 
 @login_required(login_url='/login')
+@csrf_protect
 def listar_posts_view(request):
+    # Mostra toda a lista
     posts = Post.objects.all()
-    return render(request, 'sgc/post/listar_posts.html', {'posts': posts})
+    # Filtrar as informações em conjunto e/ou individualmente e mostra na tela
+    form = PostFiltrarForm(request.GET)
+    if form.is_valid():
+        titulo = form.cleaned_data['titulo']
+        sumario = form.cleaned_data['sumario']
+        criado_em_inicio = form.cleaned_data['criado_em_inicio']
+        criado_em_fim = form.cleaned_data['criado_em_fim']
+        editado_em_inicio = form.cleaned_data['editado_em_inicio']
+        editado_em_fim = form.cleaned_data['editado_em_fim']
+
+        # Filtro por título
+        if titulo:
+            posts = posts.filter(titulo__icontains=titulo)
+
+        # Filtro por sumário
+        if sumario:
+            posts = posts.filter(sumario__icontains=sumario)
+
+        # Filtro por data de criação (início)
+        if criado_em_inicio:
+            # Converte para datetime com fuso horário UTC
+            criado_em_inicio = timezone.make_aware(datetime.combine(
+                criado_em_inicio, datetime.min.time()))
+            # Filtra pela data (sem hora) e usa __gte (maior ou igual)
+            posts = posts.filter(criado_em__gte=criado_em_inicio)
+
+        # Filtro por data de criação (fim)
+        if criado_em_fim:
+            # Converte para datetime com fuso horário UTC
+            criado_em_fim = timezone.make_aware(datetime.combine(
+                criado_em_fim, datetime.max.time()))
+            # Filtra pela data (sem hora) e usa __lte (menor ou igual)
+            posts = posts.filter(criado_em__lte=criado_em_fim)
+
+        # Filtro por data de criação (inicio)
+        if editado_em_inicio:
+            # Converte para datetime com fuso horário UTC
+            editado_em_inicio = timezone.make_aware(datetime.combine(
+                editado_em_fim, datetime.min.time()))
+            posts = posts.filter(editado_em__gte=editado_em_inicio)
+
+        # Filtro por data de criação (fim)
+        if editado_em_fim:
+            # Converte para datetime com fuso horário UTC
+            editado_em_fim = timezone.make_aware(datetime.combine(
+                editado_em_fim, datetime.max.time()))
+            posts = posts.filter(editado_em__lte=editado_em_fim)
+
+    return render(request, 'sgc/post/listar_posts.html', {'posts': posts, 'form': form})
 
 
 @login_required(login_url='/login')
@@ -230,11 +282,11 @@ def editar_post_view(request, id):
 @login_required(login_url='/login')
 @requires_csrf_token
 @csrf_protect
-def deletar_post_view(request, post_id):
-    post = get_object_or_404(Post, pk=post_id)
+def deletar_post_view(request, id):
+    post = get_object_or_404(Post, pk=id)
     if request.method == 'POST':
         post.delete()
-        return redirect('listar_posts')
+        return redirect('listar_posts_view')
     return render(request, 'sgc/post/deletar_post.html', {'post': post})
 
 
