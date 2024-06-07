@@ -1,6 +1,7 @@
+
 from django import forms
 from django import forms
-from .models import Aluno, Post, Professor, Usuario, TipoAcesso
+from .models import Aluno, Coordenador, Escola, Post, Professor, Usuario, TipoAcesso
 
 
 class CadastroUsuarioForm(forms.ModelForm):
@@ -34,6 +35,12 @@ class UsuarioForm(forms.ModelForm):
         fields = ['nome', 'sobrenome', 'email']
 
 
+class CoordenadorForm(forms.ModelForm):
+    class Meta:
+        model = Coordenador
+        fields = []
+
+
 class ProfessorForm(forms.ModelForm):
     class Meta:
         model = Professor
@@ -53,11 +60,22 @@ class CadastrarProfessorForm(forms.ModelForm):
         fields = ['formacao', 'area_atuacao']
 
 
-# class CadastroCoordenadorForm(forms.ModelForm):
-#     class Meta:
-#         model = Usuario
-#         # Campos comuns a todos os usuários
-#         fields = ['nome', 'sobrenome', 'email']
+class CadastroEscolaForm(forms.ModelForm):
+    coordenador = forms.ModelChoiceField(
+        queryset=Professor.objects.filter(
+            usuario__tipo_acesso__nome="Coordenador"),
+        label="Professor",
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
+
+    class Meta:
+        model = Escola
+        fields = ['nome', 'endereco', 'telefone', 'coordenador']
+        widgets = {
+            'nome': forms.TextInput(attrs={'class': 'form-control'}),
+            'endereco': forms.TextInput(attrs={'class': 'form-control'}),
+            'telefone': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
 
 class CadastrarAlunoForm(forms.ModelForm):

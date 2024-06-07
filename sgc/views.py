@@ -11,8 +11,8 @@ from gotrue.errors import AuthApiError
 from sgc.models import (Coordenador, Post, TipoAcesso,
                         Usuario, Professor, Aluno)
 
-from .forms import (AlunoForm, CadastrarAlunoForm, CadastrarProfessorForm, CadastroCoordenadorForm,
-                    CadastroUsuarioForm, LoginForm, PostFiltrarForm, PostForm, ProfessorForm, UsuarioForm)
+from .forms import (AlunoForm, CadastrarAlunoForm, CadastrarProfessorForm, CadastroEscolaForm,
+                    CadastroUsuarioForm, CoordenadorForm, LoginForm, PostFiltrarForm, PostForm, ProfessorForm, UsuarioForm)
 
 
 def index(request):
@@ -38,10 +38,8 @@ def cadastrar_usuario_view(request):
             request.session['cadastro_data'] = form.data
             if tipo_acesso_obj.nome == "Aluno":
                 return redirect(reverse('processar_cadastro_aluno_view'))
-            elif tipo_acesso_obj.nome == "Professor":
+            elif tipo_acesso_obj.nome == "Professor" or tipo_acesso_obj.nome == "Coordenador":
                 return redirect(reverse('processar_cadastro_professor_view'))
-            elif tipo_acesso_obj.nome == "Coordenação":
-                return redirect(reverse('processar_cadastro_coordenador_view'))
     else:
         form = CadastroUsuarioForm()
     return render(request, 'sgc/cadastro_usuario.html', {'form': form})
@@ -58,30 +56,33 @@ def processar_cadastro_aluno_view(request):
             sobrenome = cadastro_data.get('sobrenome')
             email = cadastro_data.get('email')
             password = cadastro_data.get('password')
-            tipo_acesso = int(cadastro_data.get('tipo_acesso'))
+            tipo_acesso = cadastro_data.get('tipo_acesso')
             curso = form.cleaned_data['curso']
             turma = form.cleaned_data['turma']
+            try:
+                # Obter configurações padrão
+                _supabase = settings.SUPABASE
+                # Cadastrar authenticação
+                _response = _supabase.auth.sign_up(
+                    {
+                        "email": email,
+                        "password": password, }
+                )
 
-            # Obter configurações padrão
-            _supabase = settings.SUPABASE
-            # Cadastrar authenticação
-            _response = _supabase.auth.sign_up(
-                {
-                    "email": email,
-                    "password": password, }
-            )
+                # Salve o usuário e o aluno no banco de dados
+                _usuario = Usuario.objects.create(
+                    nome=nome, sobrenome=sobrenome, email=email, tipo_acesso=TipoAcesso.objects.get(
+                        id=int(tipo_acesso))
+                )
+                _aluno = Aluno.objects.create(
+                    usuario=_usuario, curso=curso, turma=turma)
+                messages.success(
+                    request, 'Cadastro de aluno realizado com sucesso!')
 
-            # Salve o usuário e o aluno no banco de dados
-            _usuario = Usuario.objects.create(
-                nome=nome, sobrenome=sobrenome, email=email, tipo_acesso=TipoAcesso.objects.get(
-                    id=tipo_acesso)
-            )
-            _aluno = Aluno.objects.create(
-                usuario=_usuario, curso=curso, turma=turma)
-            messages.success(
-                request, 'Cadastro de aluno realizado com sucesso!')
-            del request.session['cadastro_data']
-            return redirect('login')
+                del request.session['cadastro_data']
+                return redirect('login_view')
+            except AuthApiError as e:
+                print("Erro", e)
     else:
         form = CadastrarAlunoForm()
     return render(request, 'sgc/cadastro_aluno.html', {'form': form})
@@ -102,109 +103,77 @@ def processar_cadastro_professor_view(request):
             tipo_acesso = int(cadastro_data.get('tipo_acesso'))
             formacao = form.cleaned_data['formacao']
             area_atuacao = form.cleaned_data['area_atuacao']
+            print(tipo_acesso)
+            try:
+                # Obter configurações padrão
+                _supabase = settings.SUPABASE
+                # Cadastrar authenticação
+                _response = _supabase.auth.sign_up(
+                    {
+                        "email": email,
+                        "password": password, }
+                )
 
-            # Obter configurações padrão
-            _supabase = settings.SUPABASE
-            # Cadastrar authenticação
-            _response = _supabase.auth.sign_up(
-                {
-                    "email": email,
-                    "password": password, }
-            )
-
-            # Salvando o usuário e o professor no banco de dados
-            _usuario = Usuario.objects.create(
-                nome=nome, sobrenome=sobrenome, email=email, tipo_acesso=TipoAcesso.objects.get(
-                    id=tipo_acesso)
-            )
-            _professor = Professor.objects.create(
-                usuario=_usuario, formacao=formacao, area_atuacao=area_atuacao)
-            messages.success(
-                request, 'Cadastro de professor realizado com sucesso!')
-            del request.session['cadastro_data']
-            return redirect('login')
+                # Salvando o usuário e o professor no banco de dados
+                _usuario = Usuario.objects.create(
+                    nome=nome, sobrenome=sobrenome, email=email, tipo_acesso=TipoAcesso.objects.get(
+                        id=tipo_acesso)
+                )
+                _professor = Professor.objects.create(
+                    usuario=_usuario, formacao=formacao, area_atuacao=area_atuacao)
+                messages.success(
+                    request, 'Cadastro de professor realizado com sucesso!')
+                if tipo_acesso == 2:
+                    return redirect(reverse('processar_cadastro_coordenador_view'))
+                else:
+                    del request.session['cadastro_data']
+                    return redirect(login_view)
+            except AuthApiError as e:
+                print("Erro:", e)
     else:
         form = CadastrarProfessorForm()
     return render(request, 'sgc/cadastro_professor.html', {'form': form})
 
 
-# @requires_csrf_token
-# @csrf_protect
-# def processar_cadastro_coordenador_view(request):
-#     if request.method == 'POST':
-#         form = CadastroCoordenadorForm(request.POST)
-#         if form.is_valid():
-#             cadastro_data = request.session.get('cadastro_data', {})
-#             nome = cadastro_data.get('nome')
-#             sobrenome = cadastro_data.get('sobrenome')
-#             email = cadastro_data.get('email')
-#             tipo_acesso = int(cadastro_data.get('tipo_acesso'))
-
-#             _supabase = settings.SUPABASE
-
-#             try:
-#                 # Cria o usuário no Django (após o sucesso no Supabase)
-#                 _tipo_acesso = tipo_acesso = TipoAcesso.objects.get(
-#                     id=tipo_acesso)
-
-#                 _usuario = Usuario.objects.create(
-#                     nome=nome,
-#                     sobrenome=sobrenome,
-#                     email=email,
-#                     tipo_acesso=_tipo_acesso,
-#                     is_staff=True,  # Concede permissão de acesso ao Django Admin
-#                     is_superuser=True  # Concede permissão de superusuário
-#                 )
-#                 # Cria o perfil de coordenador
-#                 Coordenador.objects.create(usuario=_usuario)
-
-#                 messages.success(
-#                     request, 'Coordenador cadastrado com sucesso!')
-#                 # Redireciona para o Django Admin
-#                 return redirect('admin:index')
-
-#             except AuthApiError as e:
-#                 messages.error(
-#                     request, f"Erro na API de autenticação do Supabase: {e}")
-#             except Exception as e:
-#                 messages.error(request, f"Erro inesperado: {e}")
-
-#     else:
-#         form = CadastroCoordenadorForm()
-#     return render(request, 'sgc/cadastro_coordenador.html', {'form': form})
-
-
 @requires_csrf_token
 @csrf_protect
-def login_view(request):
+def processar_cadastro_coordenador_view(request):
     if request.method == 'POST':
-        form = LoginForm(request.POST)
+        form = CadastroEscolaForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            lembrar_de_mim = form.data.get('remember_me') == 'on'
+            cadastro_data = request.session.get('cadastro_data', {})
+            email = cadastro_data.get('email')
+            _supabase = settings.SUPABASE
 
             try:
-                user = authenticate(request, username=email, password=password)
-                if user is not None:
-                    login(request, user)
-                    if lembrar_de_mim:
-                        request.session.set_expiry(1209600)  # 2 semanas
-                    else:
-                        # Sessão expira quando o navegador é fechado
-                        request.session.set_expiry(0)
-                    return redirect(index)
-                else:
+                _usuario = Usuario.objects.get(email=email)
+                try:
+                    # Tente obter o Professor associado ao usuário
+                    _professor = Professor.objects.get(usuario=_usuario)
+                except Professor.DoesNotExist:
+                    # Se o usuário não for um professor, redirecione para o cadastro de professor
                     messages.error(
-                        request, f"Erro ao fazer login com usuario. Verifique se você ja fez login.")
-                    return redirect(login_view)
-            except Exception:
-                messages.error(request, f"Erro do ao entrar como {
-                               email}: {user}")
+                        request, 'Você precisa ser um professor para se cadastrar como coordenador.')
+                    return redirect('processar_cadastro_professor_view')
+                _coordenador = Coordenador.objects.create(
+                    usuario=_usuario,
+                )
+                messages.success(
+                    request, 'Coordenador cadastrado com sucesso!')
+                # Adiciona o professor ao coordenador
+                _coordenador.professores.add(_professor)
+                print(_coordenador)
+                del request.session['cadastro_data']
                 return redirect(login_view)
+
+            except AuthApiError as e:
+                messages.error(
+                    request, f"Erro na API de autenticação do Supabase: {e}")
+            except Exception as e:
+                messages.error(request, f"Erro inesperado: {e}")
     else:
-        form = LoginForm()
-    return render(request, 'sgc/login.html', {'form': form})
+        form = CadastroEscolaForm()
+    return render(request, 'sgc/cadastro_coordenador.html', {'form': form})
 
 
 @login_required(login_url='/login')
@@ -212,11 +181,14 @@ def perfil_view(request):
     try:
         user = Usuario.objects.get(email=request.user.email)
         if str(user.tipo_acesso) == "Professor":
-            perfil = Professor.objects.get()
+            perfil = Professor.objects.get(usuario=user)
             form_class = ProfessorForm
         elif str(user.tipo_acesso) == "Aluno":
             perfil = Aluno.objects.get()
             form_class = AlunoForm
+        elif str(user.tipo_acesso) == "Coordenador":
+            perfil = user.coordenador
+            form_class = CoordenadorForm
         else:
             perfil = user
             form_class = UsuarioForm
@@ -228,13 +200,17 @@ def perfil_view(request):
     if request.method == 'POST':
         form = form_class(request.POST, instance=perfil)
         if form.is_valid():
-            form.save()
+            perfil = form.save()
+            if str(user.tipo_acesso) == "Professor" or str(user.tipo_acesso) == "Coordenador":
+                user.nome = perfil.usuario.nome
+                user.sobrenome = perfil.usuario.sobrenome
+                user.email = perfil.usuario.email
+            user.save()
             messages.success(request, 'Perfil atualizado com sucesso!')
             # Redireciona para a mesma página após a atualização
             return redirect(perfil_view)
         else:
             form = form_class(instance=perfil)
-
     return render(request, 'sgc/perfil.html', {'form': form_class, 'perfil': perfil, 'usuario': user})
 
 
@@ -337,6 +313,39 @@ def deletar_post_view(request, id):
         post.delete()
         return redirect('listar_posts_view')
     return render(request, 'sgc/post/deletar_post.html', {'post': post})
+
+
+@requires_csrf_token
+@csrf_protect
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            lembrar_de_mim = form.data.get('remember_me') == 'on'
+
+            try:
+                user = authenticate(request, username=email, password=password)
+                if user is not None:
+                    login(request, user)
+                    if lembrar_de_mim:
+                        request.session.set_expiry(1209600)  # 2 semanas
+                    else:
+                        # Sessão expira quando o navegador é fechado
+                        request.session.set_expiry(0)
+                    return redirect(index)
+                else:
+                    messages.error(
+                        request, f"Erro ao fazer login com usuario. Verifique se você ja fez login.")
+                    return redirect(login_view)
+            except Exception:
+                messages.error(request, f"Erro do ao entrar como {
+                               email}: {user}")
+                return redirect(login_view)
+    else:
+        form = LoginForm()
+    return render(request, 'sgc/login.html', {'form': form})
 
 
 def logout_view(request):

@@ -71,7 +71,7 @@ class Usuario(AbstractBaseUser):
 class TipoAcesso(models.Model):
     ALUNO = 'aluno'
     PROFESSOR = 'professor'
-    COORDENADOR = 'cordenador'
+    COORDENADOR = 'coordenador'
     TIPOS_ACESSO_CHOICES = [
         (ALUNO, 'aluno'),
         (PROFESSOR, 'professor'),
@@ -109,16 +109,26 @@ class Aluno(models.Model):
 class Coordenador(models.Model):
     usuario = models.OneToOneField(
         Usuario, on_delete=models.CASCADE, to_field='matricula', unique=True, related_name='coordenador', null=False)
-    professores = models.ManyToManyField(Professor, related_name='professores')
+    professores = models.ManyToManyField(Professor, related_name='coordenadores')
 
     def __str__(self):
         return f"{self.usuario.nome} {self.usuario.sobrenome} - Coordenador"
 
 
+class Escola(models.Model):
+    nome = models.CharField(max_length=100, unique=True)
+    endereco = models.CharField(max_length=200)
+    telefone = models.CharField(max_length=20, blank=True)
+    coordenador = models.ManyToManyField(Coordenador, related_name='escolas')
+
+    def __str__(self):
+        return self.nome
+
+
 class Post(models.Model):
     titulo = models.CharField(max_length=50)
     sumario = models.CharField(max_length=100)
-    texto = models.TextField(max_length=255)
+    texto = models.TextField(max_length=254)
     autor = models.ForeignKey(
         Usuario, on_delete=models.CASCADE, to_field='matricula', related_name="autor_id", null=False)
     criado_em = models.DateTimeField(

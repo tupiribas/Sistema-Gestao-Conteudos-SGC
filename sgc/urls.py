@@ -1,3 +1,4 @@
+
 """
 URL configuration for sgc project.
 
@@ -17,7 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from .views import (cadastrar_usuario_view, login_view, logout_view, index, perfil_view,
-                    processar_cadastro_aluno_view, processar_cadastro_professor_view,
+                    processar_cadastro_aluno_view, processar_cadastro_coordenador_view, processar_cadastro_professor_view,
                     criar_post_view, editar_post_view, listar_posts_view, deletar_post_view)
 
 urlpatterns = [
@@ -29,8 +30,8 @@ urlpatterns = [
          name='processar_cadastro_aluno_view'),
     path('cadastrar/professor/', processar_cadastro_professor_view,
          name='processar_cadastro_professor_view'),
-    #     path('cadastrar/coordenador/', processar_cadastro_coordenador_view,
-    #          name='processar_cadastro_coordenador_view'),
+    path('cadastrar/coordenador/', processar_cadastro_coordenador_view,
+         name='processar_cadastro_coordenador_view'),
     path('publicacao/criar/', criar_post_view,
          name='criar_post_view'),
     path(r'publicacao/editar/<int:id>/', editar_post_view,
