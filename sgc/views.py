@@ -20,11 +20,15 @@ def index(request):
     if request.user.is_authenticated:
         # Se estiver autenticado, obtém o nome do usuário do Supabase (você precisará implementar essa lógica)
         # Substitua 'nome' pelo atributo correto no seu modelo de usuário
-        nome_usuario = request.user.email
+        email = request.user.email
+        usuario = Usuario.objects.get(email=email)
+        publicacoes = Post.objects.filter(autor=usuario.matricula).order_by('criado_em')[:5]
     else:
-        nome_usuario = None  # Ou defina um valor padrão, como "Visitante"
+        email = None  # Ou defina um valor padrão, como "Visitante"
+        usuario = None
+        publicacoes = None
     # Renderiza o template index.html, passando o nome do usuário no contexto
-    return render(request, 'sgc/index.html', {'user': request.user, 'username': nome_usuario})
+    return render(request, 'sgc/index.html', {'usuario': usuario, 'publicacoes': publicacoes})
 
 
 @requires_csrf_token
@@ -217,8 +221,9 @@ def perfil_view(request):
 @login_required(login_url='/login')
 @csrf_protect
 def listar_posts_view(request):
+    usuario = Usuario.objects.get(email=request.user.email)
     # Mostra toda a lista
-    posts = Post.objects.all()
+    posts = Post.objects.filter(autor=usuario)
     # Filtrar as informações em conjunto e/ou individualmente e mostra na tela
     form = PostFiltrarForm(request.GET)
     if form.is_valid():

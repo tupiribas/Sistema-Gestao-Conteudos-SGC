@@ -1,12 +1,49 @@
-{% extends 'sgc/base.html' %} 
+{% extends 'sgc/base.html' %}
+{% load django_bootstrap5 %}
 
-{% block content %} 
-    <h1>Bem-vindo ao Sistema de Gestão de Conteúdo</h1>
-        
+{% block content %}
+
+<style>
+    /* Estilos personalizados para as publicações */
+    .publicacao {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    }
+
+    .publicacao h2 {
+        margin-bottom: 10px;
+    }
+
+    .publicacao .data-publicacao {
+        font-size: 0.9rem;
+        color: #6c757d; /* Cinza do Bootstrap */
+    }
+</style>
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Bem vindo {{usuario.nome}} {{ usuario.sobrenome}}</h1>
     {% if user.is_authenticated %}
-        <p class="boas-vindas">Olá, {{ user.email }}!</p>
+        <h2 class="text-left mb-4">Publicações Mais Recentes</h2>
+
+        {% for publicacao in publicacoes %}
+            <div class="publicacao">
+                <h2>{{ publicacao.titulo }}</h2>
+                <p class="data-publicacao">Criado em: {{ publicacao.criado_em|date:"d/m/Y H:i:s" }}</p>
+                <p>{{ publicacao.sumario|safe }}</p>
+                <a href="{% url 'listar_posts_view' %}" class="btn btn-primary">Ler mais</a>
+            </div>
+        {% endfor %}
+
+        {% if not publicacoes %}
+            <p class="text-center">Nenhuma publicação encontrada.</p>
+        {% endif %}
     {% else %}
-        <p class="boas-vindas">Faça login ou cadastre-se para acessar o sistema.</p>
+        <p class="text-center">Faça o seu cadastro para acessar as diversas funções</p>
     {% endif %}
-    
+</div>
+
 {% endblock %}
