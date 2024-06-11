@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-)jbq_&=jw^-o+4+k$@!6d2=1#p3i@8an(&^%0&^3rz62uaddla
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -64,7 +64,6 @@ MIDDLEWARE = [
 ]
 
 
-
 ROOT_URLCONF = 'sgc.urls'
 TEMPLATES = [
     {
@@ -91,12 +90,12 @@ WSGI_APPLICATION = 'sgc.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',  # Use o backend PostgreSQL
-        'NAME': os.getenv('DATABASE'),     # Substitua pelos seus dados
-        'USER': os.getenv('USER'),
-        'PASSWORD': os.getenv('PASSWORD'),
-        'HOST': os.getenv('HOST'),
-        'PORT': os.getenv('PORT'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT', default='5432'),
     }
 }
 
